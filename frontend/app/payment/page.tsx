@@ -163,9 +163,15 @@ export default function PaymentPage() {
       formData.append("platform", platform);
       formData.append("transactionId", transactionId.trim() || "");
 
-      // 2. Send to Next.js API Route (internal)
+      // 2. Fetch Firebase ID Token for secure backend verification
+      const token = await user.getIdToken();
+
+      // 3. Send to Next.js API Route (internal)
       const res = await fetch("/api/payment", {
         method: "POST",
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData,
       });
 

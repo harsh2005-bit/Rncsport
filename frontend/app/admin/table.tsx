@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { MessageCircle, X, Clock, Loader2, ArrowLeft, XCircle, ImageIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/auth-context";
 
 interface PaymentRequest {
   id: string;
@@ -26,11 +27,18 @@ export default function AdminTable() {
   const [filter, setFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
   const [isPending, startTransition] = useTransition();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const { user } = useAuth();
 
   // Switching to STABLE API FETCHING (Guaranteed to work bypasses client-side rules)
   const fetchPayments = async (isInitial = false) => {
+    if (!user) return;
     try {
-      const response = await fetch('/api/payment');
+      const token = await user.getIdToken();
+      const response = await fetch('/api/payment', {
+        headers: { 
+          'Authorization': `Bearer ${token}` 
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setPayments(data);
@@ -50,11 +58,16 @@ export default function AdminTable() {
   }, []);
 
   const updateStatus = async (id: string, status: string) => {
+    if (!user) return;
     startTransition(async () => {
       try {
+        const token = await user.getIdToken();
         const response = await fetch('/api/payment', {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify({ id, status })
         });
         

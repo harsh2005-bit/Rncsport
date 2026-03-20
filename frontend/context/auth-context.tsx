@@ -1,11 +1,10 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useRef } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, User, signOut } from "firebase/auth";
-import { onSnapshot, query, collection, where, limit, doc, updateDoc, orderBy } from "firebase/firestore";
+import { onSnapshot, query, collection, where, limit, orderBy } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { AuthModal } from "@/components/auth-modal";
-import { toast } from "sonner";
 
 interface UserProfile {
   id: string;
@@ -59,10 +58,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (firebaseUser?.email) {
         try {
           const nameToSync = firebaseUser.displayName || firebaseUser.email.split('@')[0] || "User";
-          // Optimistically sync details to our own Next.js API so the user document aligns strictly with Google Auth overrides.
+          const token = await firebaseUser.getIdToken();
+          
           await fetch('/api/auth/sync', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify({
               authId: firebaseUser.uid,
               name: nameToSync,
@@ -106,9 +109,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  // Global payment notification listener
-  const notifiedPaymentsRef = useRef<Set<string>>(new Set());
-
   useEffect(() => {
     if (!user) return;
 
@@ -121,54 +121,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const unsubscribe = onSnapshot(q, 
       (snapshot) => {
+        // Notifications list handles the reactive UI update for the bell icon
         setNotifications(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        
-        snapshot.docChanges().forEach(async (change) => {
-          if (change.type === "modified" || change.type === "added") {
-            const data = change.doc.data();
-            const docId = change.doc.id;
-            const status = data.status?.toLowerCase();
-            
-            const notificationKey = `${docId}_${status}`;
-
-            // Prevent duplicate notifications using ref and database flag
-            if (data.notified || notifiedPaymentsRef.current.has(notificationKey)) return;
-            
-            if (status === "approved" || status === "rejected") {
-              // Add to ref immediately to prevent race conditions
-              notifiedPaymentsRef.current.add(notificationKey);
-              
-              if (status === "approved") {
-                toast.success("Payment Approved!", {
-                  description: "Your ID will be shared shortly. Redirecting to WhatsApp support.",
-                  duration: 6000,
-                });
-                
-                try {
-                  await updateDoc(doc(db, "payments", change.doc.id), { notified: true });
-                } catch (err) {
-                  console.error("Error updating notified status:", err);
-                }
-
-                // WhatsApp redirect
-                setTimeout(() => {
-                  window.open(`https://wa.me/917667161841?text=My%20payment%20(ID:%20${change.doc.id})%20has%20been%20approved.%20Please%20share%20my%20betting%20ID.`, '_blank');
-                }, 3000);
-              } else if (status === "rejected") {
-                toast.error("Payment Rejected", {
-                  description: "There was an issue with your proof. Please contact support via WhatsApp.",
-                  duration: 8000,
-                });
-                
-                try {
-                  await updateDoc(doc(db, "payments", change.doc.id), { notified: true });
-                } catch (err) {
-                  console.error("Error updating notified status:", err);
-                }
-              }
-            }
-          }
-        });
       },
       (error) => {
         console.error("Firebase Snapshot Error (Listening for payments):", error);

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { adminDb, adminStorage } from "@/lib/firebase-admin";
 import { randomUUID } from "crypto";
+import { verifyAuth, verifyIsAdmin } from "@/lib/auth-util";
 
 export const runtime = "nodejs";
 
@@ -8,8 +9,20 @@ export async function POST(req: Request) {
   try {
     console.log("Payment Submission Started...");
     
+    // 1. Verify Authentication
+    const decodedToken = await verifyAuth(req);
+    if (!decodedToken) {
+      return NextResponse.json({ message: "Unauthorized: Access Denied" }, { status: 401 });
+    }
+
     const formData = await req.formData();
     const userId = formData.get("userId") as string;
+    
+    // 2. Prevent Spoofing: Ensure a user can only submit for their own UID
+    if (decodedToken.uid !== userId) {
+      return NextResponse.json({ message: "Forbidden: UID mismatch" }, { status: 403 });
+    }
+
     const name = formData.get("name") as string;
     const phoneNumber = formData.get("phoneNumber") as string;
     const paymentMethod = formData.get("paymentMethod") as string;
@@ -17,20 +30,8 @@ export async function POST(req: Request) {
     const transactionId = formData.get("transactionId") as string;
     const file = formData.get("file") as File;
 
-    console.log("PAYMENT FORM DATA RECEIVED:", {
-      userId,
-      name,
-      phoneNumber,
-      paymentMethod,
-      platform,
-      transactionId,
-      fileName: file?.name,
-      fileType: file?.type,
-    });
-
-    if (!userId || !file) {
-      console.error("Missing required fields: userId or file");
-      return NextResponse.json({ message: "Missing required fields (userId or file)" }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ message: "Missing required file" }, { status: 400 });
     }
 
     console.log(`Processing upload for user: ${userId}, file: ${file.name}`);
@@ -91,8 +92,14 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    // 1. Secure Admin Access
+    const isAdmin = await verifyIsAdmin(req);
+    if (!isAdmin) {
+       return NextResponse.json({ message: "Unauthorized: Admin Access Only" }, { status: 401 });
+    }
+
     const snapshot = await adminDb.collection("payments")
       .orderBy("createdAt", "desc")
       .limit(100)
@@ -113,6 +120,12 @@ export async function GET() {
 
 export async function PATCH(req: Request) {
   try {
+    // 1. Secure Admin Access
+    const isAdmin = await verifyIsAdmin(req);
+    if (!isAdmin) {
+       return NextResponse.json({ message: "Unauthorized: Admin Access Only" }, { status: 401 });
+    }
+
     const { id, status } = await req.json();
     if (!id || !status) {
       return NextResponse.json({ message: "Missing id or status" }, { status: 400 });

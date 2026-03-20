@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebase-admin";
+import { verifyAuth } from "@/lib/auth-util";
 
 export async function POST(req: Request) {
   try {
     const { authId, name, email, phoneNumber } = await req.json();
 
-    if (!authId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // 1. Verify Authentication Token
+    const decodedToken = await verifyAuth(req);
+    
+    // 2. Critical Security Check: Ensure the token belongs to the user being synced
+    if (!decodedToken || decodedToken.uid !== authId) {
+      return NextResponse.json({ error: "Unauthorized: Invalid or mismatched token" }, { status: 401 });
     }
 
     const userRef = adminDb.collection("users").doc(authId);
