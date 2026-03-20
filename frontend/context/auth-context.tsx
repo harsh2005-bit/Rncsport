@@ -1,9 +1,11 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 import { onAuthStateChanged, User, signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { onSnapshot, query, collection, where, limit, doc, updateDoc, orderBy } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
 import { AuthModal } from "@/components/auth-modal";
+import { toast } from "sonner";
 
 interface UserProfile {
   id: string;
@@ -14,10 +16,20 @@ interface UserProfile {
   role: "USER" | "ADMIN";
 }
 
+interface Notification {
+  id: string;
+  status?: string;
+  notified?: boolean;
+  userId?: string;
+  createdAt?: any;
+  [key: string]: any;
+}
+
 interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
+  notifications: Notification[];
   logout: () => Promise<void>;
   openAuthModal: () => void;
   closeAuthModal: () => void;
@@ -27,6 +39,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   profile: null,
   loading: true,
+  notifications: [],
   logout: async () => {},
   openAuthModal: () => {},
   closeAuthModal: () => {},
@@ -37,6 +50,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -44,6 +58,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (firebaseUser?.email) {
         try {
+          const nameToSync = firebaseUser.displayName || firebaseUser.email.split('@')[0] || "User";
+          // Optimistically sync details to our own Next.js API so the user document aligns strictly with Google Auth overrides.
+          await fetch('/api/auth/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              authId: firebaseUser.uid,
+              name: nameToSync,
+              email: firebaseUser.email,
+              phoneNumber: firebaseUser.phoneNumber || ""
+            })
+          }).catch(console.error);
+
           const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
           const response = await fetch(`${apiUrl}/users/profile/${firebaseUser.email}`);
           if (response.ok) {
@@ -79,6 +106,78 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
+  // Global payment notification listener
+  const notifiedPaymentsRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!user) return;
+
+    const q = query(
+      collection(db, "payments"),
+      where("userId", "==", user.uid),
+      orderBy("createdAt", "desc"),
+      limit(10)
+    );
+
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        setNotifications(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        
+        snapshot.docChanges().forEach(async (change) => {
+          if (change.type === "modified" || change.type === "added") {
+            const data = change.doc.data();
+            const docId = change.doc.id;
+            const status = data.status?.toLowerCase();
+            
+            const notificationKey = `${docId}_${status}`;
+
+            // Prevent duplicate notifications using ref and database flag
+            if (data.notified || notifiedPaymentsRef.current.has(notificationKey)) return;
+            
+            if (status === "approved" || status === "rejected") {
+              // Add to ref immediately to prevent race conditions
+              notifiedPaymentsRef.current.add(notificationKey);
+              
+              if (status === "approved") {
+                toast.success("Payment Approved!", {
+                  description: "Your ID will be shared shortly. Redirecting to WhatsApp support.",
+                  duration: 6000,
+                });
+                
+                try {
+                  await updateDoc(doc(db, "payments", change.doc.id), { notified: true });
+                } catch (err) {
+                  console.error("Error updating notified status:", err);
+                }
+
+                // WhatsApp redirect
+                setTimeout(() => {
+                  window.open(`https://wa.me/917667161841?text=My%20payment%20(ID:%20${change.doc.id})%20has%20been%20approved.%20Please%20share%20my%20betting%20ID.`, '_blank');
+                }, 3000);
+              } else if (status === "rejected") {
+                toast.error("Payment Rejected", {
+                  description: "There was an issue with your proof. Please contact support via WhatsApp.",
+                  duration: 8000,
+                });
+                
+                try {
+                  await updateDoc(doc(db, "payments", change.doc.id), { notified: true });
+                } catch (err) {
+                  console.error("Error updating notified status:", err);
+                }
+              }
+            }
+          }
+        });
+      },
+      (error) => {
+        console.error("Firebase Snapshot Error (Listening for payments):", error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [user]);
+
   const logout = async () => {
     try {
       await signOut(auth);
@@ -92,7 +191,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const closeAuthModal = () => setIsModalOpen(false);
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, logout, openAuthModal, closeAuthModal }}>
+    <AuthContext.Provider value={{ user, profile, loading, notifications, logout, openAuthModal, closeAuthModal }}>
       {children}
       <AuthModal isOpen={isModalOpen} onClose={closeAuthModal} />
     </AuthContext.Provider>

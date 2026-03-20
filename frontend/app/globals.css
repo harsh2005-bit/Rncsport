@@ -135,8 +135,26 @@ button, a {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+
 .card-hover:hover {
   transform: translateY(-8px);
   border-color: rgba(251, 191, 36, 0.4);
   box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.7), 0 0 30px rgba(251, 191, 36, 0.12);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
 }
