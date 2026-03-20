@@ -20,6 +20,8 @@ export const metadata: Metadata = {
   description: "Experience the next level of online gaming with JSR SPORTS. Live sports, premium casino games, and instant updates.",
 };
 
+import { Toaster } from "sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -40,6 +42,7 @@ export default function RootLayout({
                 </main>
                 <WhatsAppButton />
               </div>
+              <Toaster position="bottom-right" theme="dark" closeButton richColors />
             </AuthProvider>
         </body>
       </html>

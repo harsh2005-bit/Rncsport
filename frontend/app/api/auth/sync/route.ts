@@ -1,31 +1,35 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { adminDb } from "@/lib/firebase-admin";
 
 export async function POST(req: Request) {
   try {
-    const { authId, name, phoneNumber } = await req.json();
+    const { authId, name, email, phoneNumber } = await req.json();
 
     if (!authId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.upsert({
-      where: { authId },
-      update: { 
-        name, 
-        phoneNumber: phoneNumber || "" 
-      },
-      create: {
+    const userRef = adminDb.collection("users").doc(authId);
+    const userSnapshot = await userRef.get();
+    
+    const adminEmails = (process.env.ADMIN_EMAILS || "").split(',').map(e => e.trim().toLowerCase());
+    const isAdmin = adminEmails.includes(email.toLowerCase());
+    
+    const userData = {
         authId,
         name,
+        email,
         phoneNumber: phoneNumber || "",
-        role: "user"
-      },
-    });
+        ...(userSnapshot.exists ? {} : { createdAt: new Date() }),
+        role: isAdmin ? "ADMIN" : (userSnapshot.exists ? (userSnapshot.data()?.role || "USER") : "USER"),
+        updatedAt: new Date(),
+    };
 
-    return NextResponse.json(user);
-  } catch (error: any) {
+    await userRef.set(userData, { merge: true });
+
+    return NextResponse.json({ id: authId, ...userData });
+  } catch (error: unknown) {
     console.error("Sync Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }

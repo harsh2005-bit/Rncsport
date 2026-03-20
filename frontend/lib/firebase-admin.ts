@@ -1,6 +1,5 @@
 import * as admin from "firebase-admin";
 import { readFileSync } from "fs";
-import { join } from "path";
 
 if (!admin.apps.length) {
   try {
@@ -24,6 +23,7 @@ if (!admin.apps.length) {
   }
 }
 
-export const adminDb = admin.firestore();
+import { getFirestore } from "firebase-admin/firestore";
+export const adminDb = getFirestore(admin.app(), "default");
 export const adminStorage = admin.storage();
 export const adminAuth = admin.auth();

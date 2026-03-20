@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/auth-context";
 
+
 const UPI_ID = "harshjhabksc@oksbi";
 const BANK_DETAILS = {
   name: "JSR SPORTS PVT LTD",
@@ -57,6 +58,8 @@ export default function PaymentPage() {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);
+
+
 
   if (loading) {
     return (
@@ -397,14 +400,14 @@ export default function PaymentPage() {
               </div>
               <div className="space-y-2">
                 <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">
-                  Transaction ID (optional)
+                  Transaction ID/UTR
                 </label>
                 <input
                   type="text"
                   value={transactionId}
                   onChange={(e) => setTransactionId(e.target.value)}
                   className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm text-white outline-none focus:border-primary/40 transition-all"
-                  placeholder="Enter transaction reference if available"
+                  placeholder="Enter transaction reference"
                 />
               </div>
             </div>

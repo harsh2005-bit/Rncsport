@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { adminDb } from "@/lib/firebase-admin";
 import { verifyAdminKey } from "@/lib/admin-auth";
 
 export const dynamic = "force-dynamic";
@@ -10,11 +10,21 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const requests = await prisma.paymentRequest.findMany({
-      orderBy: { createdAt: "desc" },
+    const snapshot = await adminDb.collection("paymentRequests")
+      .orderBy("createdAt", "desc")
+      .get();
+      
+    const requests = snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        ...data,
+        createdAt: data.createdAt?.toDate ? data.createdAt.toDate().toISOString() : data.createdAt
+      };
     });
+
     return NextResponse.json(requests);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("Fetch Payments Error:", error);
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }

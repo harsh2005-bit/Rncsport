@@ -1,7 +1,7 @@
 "use client";
 
 import AdminTable from "./table";
-import { ShieldAlert, LogIn, Loader2, XCircle } from "lucide-react";
+import { ShieldAlert, LogIn, Loader2, XCircle, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/auth-context";
 
@@ -79,7 +79,7 @@ export default function AdminPage() {
           </div>
           
           <p className="text-xs text-red-300 bg-red-500/10 p-3 rounded-lg border border-red-500/20">
-            You are logged in as <strong>{profile.email}</strong>, but you do not have permission to view the admin dashboard.
+            You are logged in as <strong>{profile?.email}</strong>, but you do not have permission to view the admin dashboard.
           </p>
 
           <button
@@ -95,17 +95,6 @@ export default function AdminPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-black text-white italic tracking-tighter uppercase font-cinzel">
-             Verification Center
-          </h1>
-          <p className="text-white/40 mt-2 font-medium">
-             Review payment proofs and authorize betting IDs.
-          </p>
-        </div>
-      </div>
-
       <AdminTable />
     </div>
   );

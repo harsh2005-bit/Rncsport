@@ -120,6 +120,7 @@ export async function PATCH(req: Request) {
 
     await adminDb.collection("payments").doc(id).update({
       status,
+      notified: false,
       updatedAt: new Date(),
     });
 

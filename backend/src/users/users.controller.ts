@@ -9,11 +9,15 @@ export class UsersController {
   async getProfile(@Param('email') email: string) {
     let user = await this.usersService.findByEmail(email);
 
-    // Check if this email should be an admin
-    const adminEmails = process.env.ADMIN_EMAILS
-      ? process.env.ADMIN_EMAILS.split(',')
-      : [];
-    const isAdminEmail = adminEmails.includes(email);
+    console.log(`Checking profile for: ${email}`);
+    console.log(`ADMIN_EMAILS from env: ${process.env.ADMIN_EMAILS}`);
+    const adminEmails = (process.env.ADMIN_EMAILS || '')
+      .split(',')
+      .map((e) => e.trim().toLowerCase());
+
+    const isAdminEmail = adminEmails.includes(email.toLowerCase());
+    console.log(`Found admin emails: ${JSON.stringify(adminEmails)}`);
+    console.log(`Is Admin? ${isAdminEmail}`);
 
     if (!user) {
       // Create a default profile if not exists
@@ -22,7 +26,7 @@ export class UsersController {
         username: email.split('@')[0],
         passwordHash: 'FIREBASE_AUTH',
         balance: 1000.0,
-        role: (isAdminEmail ? 'ADMIN' : 'USER') as any,
+        role: isAdminEmail ? 'ADMIN' : 'USER',
       });
     } else if (isAdminEmail && user.role !== 'ADMIN') {
       // Auto-promote to admin if email is in the admin list but role is not admin

@@ -17,7 +17,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app); // Added
+const db = getFirestore(app);
 const storage = getStorage(app);
 
 // Analytics - only in browser

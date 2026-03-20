@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as admin from 'firebase-admin';
+import { getFirestore } from 'firebase-admin/firestore';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -9,7 +10,8 @@ export class FirebaseService implements OnModuleInit {
     try {
       if (admin.apps.length === 0) {
         const filePath = join(process.cwd(), 'serviceAccountKey.json');
-        const serviceAccount = JSON.parse(readFileSync(filePath, 'utf8'));
+        const serviceAccountStr = readFileSync(filePath, 'utf8');
+        const serviceAccount = JSON.parse(serviceAccountStr) as admin.ServiceAccount;
 
         admin.initializeApp({
           credential: admin.credential.cert(serviceAccount),
@@ -28,7 +30,7 @@ export class FirebaseService implements OnModuleInit {
   }
 
   get db() {
-    return admin.firestore();
+    return getFirestore(admin.app(), 'default');
   }
 
   get storage() {
