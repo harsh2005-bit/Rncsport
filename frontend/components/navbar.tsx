@@ -180,7 +180,7 @@ export function Navbar() {
                                     {notif.status === 'approved' ? 'Payment Verified' : notif.status === 'rejected' ? 'Payment Declined' : 'Payment Processing'}
                                   </span>
                                   <span className="text-[8px] font-bold text-white/30 shrink-0">
-                                    {notif.createdAt?.toDate ? new Date(notif.createdAt.toDate()).toLocaleDateString() : 'Just now'}
+                                    {notif.createdAt && typeof notif.createdAt === 'object' && 'toDate' in notif.createdAt ? new Date((notif.createdAt as { toDate: () => Date }).toDate()).toLocaleDateString() : 'Just now'}
                                   </span>
                                 </div>
                                 <p className="text-[9px] text-white/40 leading-relaxed line-clamp-2">
