@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const userRef = adminDb.collection("users").doc(authId);
     const userSnapshot = await userRef.get();
     
-    const adminEmails = (process.env.ADMIN_EMAILS || "").split(',').map(e => e.trim().toLowerCase());
+    const adminEmails = (process.env.ADMIN_EMAILS || "harshjhabksc@gmail.com,jsrsportsofficial@gmail.com").split(',').map(e => e.trim().toLowerCase());
     const isAdmin = adminEmails.includes(email.toLowerCase());
     
     const userData = {

@@ -6,7 +6,7 @@ export const useSocket = () => {
 
   useEffect(() => {
     // Determine backend URL based on environment
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://jsrsports.in';
 
     
     // Initialize socket connection

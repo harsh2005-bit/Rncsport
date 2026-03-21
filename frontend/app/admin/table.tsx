@@ -5,10 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { MessageCircle, X, Clock, Loader2, ArrowLeft, XCircle, ImageIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { useAuth } from "@/context/auth-context";
-
-interface PaymentRequest {
+import { cn } from "@/lib/utils";interface PaymentRequest {
   id: string;
   name: string;
   phoneNumber: string;
@@ -17,26 +14,22 @@ interface PaymentRequest {
   transactionId?: string;
   screenshotUrl: string;
   status: string;
-  createdAt: any;
+  createdAt: Date | string | number | null;
 }
 
-export default function AdminTable() {
+export default function AdminTable({ adminKey }: { adminKey: string }) {
   const router = useRouter();
   const [payments, setPayments] = useState<PaymentRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
   const [isPending, startTransition] = useTransition();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const { user } = useAuth();
-
   // Switching to STABLE API FETCHING (Guaranteed to work bypasses client-side rules)
   const fetchPayments = async (isInitial = false) => {
-    if (!user) return;
     try {
-      const token = await user.getIdToken();
       const response = await fetch('/api/payment', {
         headers: { 
-          'Authorization': `Bearer ${token}` 
+          'x-admin-key': adminKey 
         }
       });
       if (response.ok) {
@@ -55,18 +48,16 @@ export default function AdminTable() {
     // Polling every 5 seconds for stability and "real-time" feel
     const interval = setInterval(() => fetchPayments(false), 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [adminKey]);
 
   const updateStatus = async (id: string, status: string) => {
-    if (!user) return;
     startTransition(async () => {
       try {
-        const token = await user.getIdToken();
         const response = await fetch('/api/payment', {
           method: 'PATCH',
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'x-admin-key': adminKey
           },
           body: JSON.stringify({ id, status })
         });

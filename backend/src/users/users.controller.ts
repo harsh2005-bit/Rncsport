@@ -11,7 +11,10 @@ export class UsersController {
 
     console.log(`Checking profile for: ${email}`);
     console.log(`ADMIN_EMAILS from env: ${process.env.ADMIN_EMAILS}`);
-    const adminEmails = (process.env.ADMIN_EMAILS || '')
+    const adminEmails = (
+      process.env.ADMIN_EMAILS ||
+      'jsrsportsofficial@gmail.com,harshjhabksc@gmail.com'
+    )
       .split(',')
       .map((e) => e.trim().toLowerCase());
 

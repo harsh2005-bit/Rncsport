@@ -397,15 +397,14 @@ export default function Home() {
                     className="object-contain mix-blend-screen"
                   />
                 </motion.div>
-                <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.8] tracking-tighter italic font-cinzel">
+                <div className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.8] tracking-tighter italic font-cinzel">
                    JSR <span className="text-gradient-primary">SPORTS</span><br/>
                    <span className="text-xl sm:text-2xl md:text-4xl lg:text-5xl not-italic font-bold tracking-[0.05em] block mt-2 opacity-90">
                       ELITE ARENA
                    </span>
-                </h1>
+                </div>
              </div>
 
-            
             <div className="relative max-w-lg group/search">
                <div className="absolute inset-0 bg-primary/5 blur-xl group-hover/search:bg-primary/10 transition-all" />
                <input 
@@ -418,9 +417,14 @@ export default function Home() {
                </div>
             </div>
 
-            <p className="text-white/50 text-sm md:text-base font-light leading-relaxed max-w-lg font-poppins">
-              Step into India&apos;s most prestigious ecosystem for premium betting IDs. Experience high-limit wagering with the speed of light.
-            </p>
+            <div>
+              <h1 className="text-[11px] sm:text-sm md:text-base font-bold text-primary tracking-widest uppercase mt-6 mb-2 font-poppins">
+                 Best Betting Site in India with Instant UPI Support
+              </h1>
+              <p className="text-white/50 text-sm md:text-base font-light leading-relaxed max-w-lg font-poppins">
+                Step into India&apos;s most prestigious ecosystem for premium betting IDs. Experience high-limit wagering with the speed of light. Fast UPI deposits, quick withdrawals, and 24/7 sports betting support.
+              </p>
+            </div>
             
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
                 <button 
@@ -477,8 +481,8 @@ export default function Home() {
       <section className="container mx-auto px-8 relative">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-24 bg-linear-to-b from-primary/50 to-transparent" />
         <div className="text-center space-y-3 mb-16 pt-20">
-          <h2 className="text-4xl font-black text-white italic tracking-tighter font-cinzel">AUTHORIZATION PROTOCOL</h2>
-          <p className="text-[9px] font-black text-primary uppercase tracking-[0.5em]">The 4-Step Journey to the Elite Circle</p>
+          <h2 className="text-4xl font-black text-white italic tracking-tighter font-cinzel uppercase">Trusted Betting Access in India</h2>
+          <p className="text-[9px] font-black text-primary uppercase tracking-[0.5em]">Instant Verification and Account Approval • 4-Step Journey</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -533,8 +537,8 @@ export default function Home() {
          <div className="absolute inset-0 bg-primary/2 rounded-[4rem] -z-10 border border-white/5" />
          <div className="flex flex-col lg:flex-row items-center justify-between gap-12 mb-12 px-6">
             <div className="space-y-6 text-center lg:text-left flex-1">
-               <h2 className="text-5xl md:text-6xl font-black text-white italic tracking-tighter font-cinzel leading-[0.85] uppercase">PREMIUM <br/><span className="text-gradient-primary">GATEWAYS</span></h2>
-               <p className="text-white/40 max-w-xl text-base font-light leading-relaxed font-poppins text-sm">Official Indian exchange infrastructure. Access high-limit liquidity via our secure panel integrations. Check live demos below.</p>
+               <h2 className="text-5xl md:text-6xl font-black text-white italic tracking-tighter font-cinzel leading-[0.85] uppercase">Fast UPI Deposit <br/><span className="text-gradient-primary">& Withdrawal</span></h2>
+               <p className="text-white/40 max-w-xl text-base font-light leading-relaxed font-poppins text-sm">Official Indian exchange infrastructure. Access high-limit liquidity via our secure panel integrations and fast UPI deposits. Check live demos below.</p>
             </div>
             <div className="flex items-center gap-8 bg-white/5 p-8 rounded-[3rem] border border-white/10 backdrop-blur-3xl shadow-2xl">
                 <div className="text-center space-y-1">
@@ -784,6 +788,69 @@ export default function Home() {
          </div>
       </section>
 
+
+      {/* 8.5 SEO AND FAQ SECTION */}
+      <section className="container mx-auto px-8 py-20">
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            {/* SEO Content Block */}
+            <div className="space-y-8">
+               <h2 className="text-4xl font-black text-white italic tracking-tighter font-cinzel">Why Choose JSR Sports?</h2>
+               <div className="space-y-6 text-sm text-white/50 font-poppins leading-relaxed">
+                  <p>
+                    JSR Sports is recognized as a leader for <strong>Trusted Betting Access in India</strong>. 
+                    Whether you are enjoying premium casino games or looking for live sports markets, we provide unparalleled speed 
+                    and security. With our <strong>Fast UPI Deposit & Withdrawal</strong> system, your funds are always 
+                    available when you need them.
+                  </p>
+                  <p>
+                    We offer <strong>24/7 Sports Betting Support</strong> via WhatsApp. From creating your account, 
+                    understanding the <Link href="/upi-betting-site-india" className="text-primary hover:underline">UPI betting process</Link>, 
+                    to exploring top cricket exchanges, our instant verification ensures you never miss out. Our platform connects you 
+                    with the most secure and reputable exchanges in India.
+                  </p>
+               </div>
+            </div>
+
+            {/* FAQ Block */}
+            <div className="space-y-8">
+               <h2 className="text-4xl font-black text-white italic tracking-tighter font-cinzel text-gradient-gold">Frequently Asked</h2>
+               <div className="space-y-4">
+                  {[
+                    { q: "How do I get a betting ID on JSR Sports?", a: "Click on 'Get ID' to connect with our WhatsApp support. Our team will verify your details and instantly provide your official login credentials." },
+                    { q: "How do I deposit using UPI?", a: "Once registered, navigate to the payment menu. Select UPI, enter the transfer amount, complete the payment on your authorized app, and upload the screenshot." },
+                    { q: "How long does account approval take?", a: "We feature an instant verification system. Standard account approvals are completely processed within 2 minutes of verification." },
+                    { q: "How do I upload payment proof?", a: "After making your fast UPI deposit, simply send the payment screenshot with the UTR number to our 24/7 WhatsApp support line." },
+                    { q: "How do withdrawals work?", a: "Withdrawals are processed instantly. Request a payout through our support channel, and funds will be sent directly to your registered UPI or bank account within minutes." },
+                  ].map((faq, idx) => (
+                    <div key={idx} className="glass p-6 rounded-2xl border border-white/5 transition-all hover:bg-white/5">
+                        <div className="flex justify-between items-center">
+                           <h3 className="text-sm font-bold text-white font-poppins">{faq.q}</h3>
+                        </div>
+                        <p className="text-xs text-white/40 mt-3 font-poppins leading-relaxed">{faq.a}</p>
+                    </div>
+                  ))}
+               </div>
+            </div>
+         </div>
+      </section>
+      
+      {/* FAQ Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              { "@type": "Question", "name": "How do I get a betting ID on JSR Sports?", "acceptedAnswer": { "@type": "Answer", "text": "Click on 'Get ID' to connect with our WhatsApp support. Our team will verify your details and instantly provide your official login credentials." } },
+              { "@type": "Question", "name": "How do I deposit using UPI?", "acceptedAnswer": { "@type": "Answer", "text": "Once registered, navigate to the payment menu. Select UPI, enter the transfer amount, complete the payment on your authorized app, and upload the screenshot." } },
+              { "@type": "Question", "name": "How long does account approval take?", "acceptedAnswer": { "@type": "Answer", "text": "We feature an instant verification system. Standard account approvals are completely processed within 2 minutes of verification." } },
+              { "@type": "Question", "name": "How do I upload payment proof?", "acceptedAnswer": { "@type": "Answer", "text": "After making your fast UPI deposit, simply send the payment screenshot with the UTR number to our 24/7 WhatsApp support line." } },
+              { "@type": "Question", "name": "How do withdrawals work?", "acceptedAnswer": { "@type": "Answer", "text": "Withdrawals are processed instantly. Request a payout through our support channel, and funds will be sent directly to your registered UPI or bank account within minutes." } }
+            ]
+          })
+        }}
+      />
 
       {/* 9. TRUST SECTION */}
       <section className="container mx-auto px-8 relative py-20 mb-20">

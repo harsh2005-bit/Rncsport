@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, User, signOut } from "firebase/auth";
-import { onSnapshot, query, collection, where, limit, orderBy } from "firebase/firestore";
+import { doc, onSnapshot, query, collection, where, limit, orderBy } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { AuthModal } from "@/components/auth-modal";
 
@@ -20,8 +20,8 @@ interface Notification {
   status?: string;
   notified?: boolean;
   userId?: string;
-  createdAt?: any;
-  [key: string]: any;
+  createdAt?: Date | string | number | null;
+  [key: string]: unknown;
 }
 
 interface AuthContextType {
@@ -60,6 +60,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           const nameToSync = firebaseUser.displayName || firebaseUser.email.split('@')[0] || "User";
           const token = await firebaseUser.getIdToken();
           
+          // Sync user data to Firestore via internal API
           await fetch('/api/auth/sync', {
             method: 'POST',
             headers: { 
@@ -74,30 +75,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             })
           }).catch(console.error);
 
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-          const response = await fetch(`${apiUrl}/users/profile/${firebaseUser.email}`);
-          if (response.ok) {
-            const data = await response.json();
-            setProfile(data);
-          } else {
-             // Backend returned an error (e.g., 404 if not restarted)
-             setProfile({
-                id: firebaseUser.uid,
-                email: firebaseUser.email,
-                username: firebaseUser.displayName || 'User',
-                balance: 0,
-                role: 'USER'
-             });
-          }
         } catch (error) {
-          console.error("Error fetching profile:", error);
-          setProfile({
-             id: firebaseUser.uid,
-             email: firebaseUser.email,
-             username: firebaseUser.displayName || 'User',
-             balance: 0,
-             role: 'USER'
-          });
+          console.error("Error during auth sync:", error);
         }
       } else {
         setProfile(null);
@@ -108,6 +87,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     return () => unsubscribe();
   }, []);
+
+  // Dedicated real-time profile listener
+  useEffect(() => {
+    if (!user) return;
+
+    const userRef = doc(db, "users", user.uid);
+    
+    const unsubscribe = onSnapshot(userRef, 
+      (snapshot: import("firebase/firestore").DocumentSnapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          setProfile({
+             id: user.uid,
+             email: data.email || user.email || "",
+             username: data.name || data.username || user.displayName || 'User',
+             balance: data.balance || 0,
+             role: data.role || 'USER'
+          });
+        } else {
+           setProfile({
+              id: user.uid,
+              email: user.email || "",
+              username: user.displayName || 'User',
+              balance: 0,
+              role: 'USER'
+           });
+        }
+      },
+      (error: Error) => {
+        console.error("Firestore Profile Sync Error:", error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;

@@ -22,11 +22,11 @@ export function Footer() {
             India&apos;s most sophisticated digital arena for premium betting ID access. For over a decade, we have provided the official gateways to the world&apos;s most liquid exchanges.
           </p>
           <div className="flex flex-wrap gap-6 pt-6">
-             <div className="flex items-center gap-3 p-5 glass rounded-[2rem] border border-primary/20">
+             <div className="flex items-center gap-3 p-5 glass rounded-4xl border border-primary/20">
                   <ShieldCheck className="w-6 h-6 text-primary" />
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Quantum Encryption Active</span>
              </div>
-             <div className="flex items-center gap-3 p-5 glass rounded-[2rem] border border-white/10">
+             <div className="flex items-center gap-3 p-5 glass rounded-4xl border border-white/10">
                   <AlertTriangle className="w-6 h-6 text-accent" />
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Responsible Play Policy</span>
              </div>
@@ -35,11 +35,17 @@ export function Footer() {
 
         <div className="space-y-8">
           <h4 className="font-black text-xs uppercase tracking-[0.5em] text-white/60 font-cinzel">Navigation</h4>
-          <ul className="space-y-5 text-sm text-white/30 font-black uppercase tracking-widest">
+          <ul className="space-y-3 text-[10px] md:text-xs text-white/30 font-black uppercase tracking-widest">
             <li><Link href="/" className="hover:text-primary transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-colors"/> Elite Arenas</Link></li>
             <li><Link href="/sports" className="hover:text-primary transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-colors"/> Scoreboard</Link></li>
             <li><Link href={WHATSAPP_LINK} className="hover:text-primary transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-colors"/> VIP Syndicate</Link></li>
             <li><Link href="/get-id" className="hover:text-primary transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-colors"/> Request Elite ID</Link></li>
+            <li className="pt-4"><h4 className="font-black text-[10px] uppercase tracking-[0.5em] text-white/60 font-cinzel pb-2">Resources</h4></li>
+            <li><Link href="/best-betting-site-india" className="hover:text-primary transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-colors"/> Best Betting Site</Link></li>
+            <li><Link href="/upi-betting-site-india" className="hover:text-primary transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-colors"/> UPI Betting India</Link></li>
+            <li><Link href="/cricket-betting-site-india" className="hover:text-primary transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-colors"/> Cricket Betting</Link></li>
+            <li><Link href="/fast-withdrawal-betting-site" className="hover:text-primary transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-colors"/> Fast Withdrawal</Link></li>
+            <li><Link href="/online-betting-id-india" className="hover:text-primary transition-colors flex items-center gap-2 group"><div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-colors"/> Online Betting ID</Link></li>
           </ul>
         </div>
 

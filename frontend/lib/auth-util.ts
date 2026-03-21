@@ -18,6 +18,13 @@ export async function verifyAuth(req: Request) {
 }
 
 export async function verifyIsAdmin(req: Request) {
+  // 1. Allow Admin Secret Key Bypass
+  const providedKey = req.headers.get("x-admin-key");
+  const secretKey = process.env.ADMIN_SECRET_KEY;
+  if (providedKey && secretKey && providedKey === secretKey) {
+    return { uid: 'admin-secret-key-user', email: 'admin' };
+  }
+
   const decodedToken = await verifyAuth(req);
   if (!decodedToken) return null;
 

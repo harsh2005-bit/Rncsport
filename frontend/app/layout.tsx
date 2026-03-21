@@ -16,8 +16,31 @@ const poppins = Poppins({
 const cinzel = Cinzel({ subsets: ["latin"], variable: "--font-cinzel" });
 
 export const metadata: Metadata = {
-  title: "JSR SPORTS | Modern Betting & Casino Platform",
-  description: "Experience the next level of online gaming with JSR SPORTS. Live sports, premium casino games, and instant updates.",
+  metadataBase: new URL('https://jsrsports.in'),
+  title: "Best Betting Site in India | Fast UPI Deposit & Withdrawal | JSR Sports",
+  description: "Join JSR Sports for premium betting access in India. Fast UPI deposits, quick withdrawals, instant account support, and 24/7 assistance.",
+  openGraph: {
+    title: "Best Betting Site in India | Fast UPI Deposit & Withdrawal | JSR Sports",
+    description: "Join JSR Sports for premium betting access in India. Fast UPI deposits, quick withdrawals, instant account support, and 24/7 assistance.",
+    url: "https://jsrsports.in",
+    siteName: "JSR Sports",
+    images: [
+      {
+        url: "/hero_premium.png",
+        width: 1200,
+        height: 630,
+        alt: "JSR Sports Betting Access",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Best Betting Site in India | Fast UPI Deposit & Withdrawal | JSR Sports",
+    description: "Join JSR Sports for premium betting access in India. Fast UPI deposits, quick withdrawals, instant account support, and 24/7 assistance.",
+    images: ["/hero_premium.png"],
+  },
 };
 
 import { Toaster } from "sonner";
@@ -29,6 +52,47 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "name": "JSR Sports",
+                  "url": "https://jsrsports.in",
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "https://jsrsports.in/?q={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                  }
+                },
+                {
+                  "@type": "Organization",
+                  "name": "JSR Sports",
+                  "url": "https://jsrsports.in",
+                  "logo": "https://jsrsports.in/logo.jpg"
+                },
+                {
+                  "@type": "Service",
+                  "name": "Online Betting Support Service",
+                  "provider": {
+                    "@type": "Organization",
+                    "name": "JSR Sports"
+                  },
+                  "areaServed": {
+                     "@type": "Country",
+                     "name": "India"
+                  },
+                  "description": "Premium betting access, fast UPI deposits, and immediate 24/7 account support in India."
+                }
+              ]
+            })
+          }}
+        />
+      </head>
         <body className={`${inter.variable} ${poppins.variable} ${cinzel.variable} font-poppins antialiased bg-background text-foreground`}>
             <AuthProvider>
               <Navbar />
