@@ -1,18 +1,41 @@
 "use client";
 
 import AdminTable from "./table";
-import { ShieldAlert, Lock, ArrowRight } from "lucide-react";
+import { ShieldAlert, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
 export default function AdminPage() {
   const [adminKey, setAdminKey] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (adminKey.trim()) {
-      setIsAuthenticated(true);
+    if (!adminKey.trim()) return;
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      // Test the admin key against a secure endpoint
+      const response = await fetch('/api/payment', {
+        headers: { 'x-admin-key': adminKey }
+      });
+
+      if (response.ok) {
+        setIsAuthenticated(true);
+      } else {
+        setError("Invalid Admin Secret Key. Access Denied.");
+        alert("SECURITY ALERT: Invalid Secret Key Provided.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Server connection failed.");
+      alert("Alert: Server connection failed.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -45,16 +68,23 @@ export default function AdminPage() {
                 type="password"
                 placeholder="Enter Admin Secret Key"
                 value={adminKey}
-                onChange={(e) => setAdminKey(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-primary transition-all text-sm font-medium"
+                onChange={(e) => {
+                  setAdminKey(e.target.value);
+                  setError("");
+                }}
+                className={`w-full bg-white/5 border ${error ? 'border-red-500' : 'border-white/10'} rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-primary transition-all text-sm font-medium`}
                 required
               />
             </div>
+            
+            {error && <p className="text-red-500 text-xs font-bold font-inter tracking-wider bg-red-500/10 py-2 rounded-xl border border-red-500/20 animate-pulse">{error}</p>}
+
             <button
               type="submit"
-              className="w-full group relative inline-flex items-center justify-center gap-3 py-4 bg-linear-to-r from-[#fbbf24] to-[#f59e0b] text-black font-black text-[12px] uppercase tracking-[0.3em] rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl"
+              disabled={isLoading}
+              className="w-full group relative inline-flex items-center justify-center gap-3 py-4 bg-linear-to-r from-[#fbbf24] to-[#f59e0b] text-black font-black text-[12px] uppercase tracking-[0.3em] rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl disabled:opacity-50"
             >
-              Sign In To Access <ArrowRight className="w-4 h-4" />
+              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Sign In To Access <ArrowRight className="w-4 h-4" /></>}
             </button>
           </form>
 
