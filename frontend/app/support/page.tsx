@@ -27,8 +27,17 @@ export default function SupportPage() {
                 
                 <div className="bg-background/80 p-4 rounded-xl border border-border">
                    <p className="font-bold mb-2 text-sm uppercase tracking-wider">📌 WhatsApp Call / Message करें:</p>
-                   <a href="https://wa.me/447735378047" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-2xl font-black text-[#25D366] hover:underline hover:brightness-110 transition-all">
+                    <a href="https://wa.me/447735378047" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-2xl font-black text-[#25D366] hover:underline hover:brightness-110 transition-all">
                      <MessageCircle className="w-8 h-8" /> +44 7735378047
+                   </a>
+                   <a href="https://wa.me/447474793397" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-2xl font-black text-[#25D366] hover:underline hover:brightness-110 transition-all">
+                     <MessageCircle className="w-8 h-8" /> +44 7474793397
+                   </a>
+                   <a href="https://wa.me/447735316528" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-2xl font-black text-[#25D366] hover:underline hover:brightness-110 transition-all">
+                     <MessageCircle className="w-8 h-8" /> +44 7735316528
+                   </a>
+                   <a href="https://wa.me/918409186609" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-2xl font-black text-[#25D366] hover:underline hover:brightness-110 transition-all">
+                     <MessageCircle className="w-8 h-8" /> +91 8409186609
                    </a>
                 </div>
 
