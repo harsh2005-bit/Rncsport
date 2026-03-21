@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://jsrsports.in'),
   title: "Best Betting Site in India | Fast UPI Deposit & Withdrawal | JSR Sports",
   description: "Join JSR Sports for premium betting access in India. Fast UPI deposits, quick withdrawals, instant account support, and 24/7 assistance.",
+  icons: {
+    icon: '/logo.jpg',
+    shortcut: '/logo.jpg',
+    apple: '/logo.jpg',
+  },
   openGraph: {
     title: "Best Betting Site in India | Fast UPI Deposit & Withdrawal | JSR Sports",
     description: "Join JSR Sports for premium betting access in India. Fast UPI deposits, quick withdrawals, instant account support, and 24/7 assistance.",
