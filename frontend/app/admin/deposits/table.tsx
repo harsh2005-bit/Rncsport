@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { MessageCircle, X, Clock, Loader2, ArrowLeft, XCircle, ImageIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -201,15 +200,21 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
                     </td>
                     <td className="px-4 py-4 text-center">
                       <div className="flex justify-center">
-                        <img 
-                          alt="Proof"
-                          onClick={() => setSelectedImage(item.screenshotUrl)}
-                          src={item.screenshotUrl} 
-                          className="w-16 h-16 object-cover rounded cursor-pointer border border-white/10 hover:border-primary/60 shadow-xl transition-all"
-                          onError={(e) => {
-                             (e.target as HTMLImageElement).src = '/logo.jpg';
-                          }}
-                        />
+                        <div className="relative group/thumb">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img 
+                            alt="Proof"
+                            onClick={() => setSelectedImage(item.screenshotUrl)}
+                            src={item.screenshotUrl} 
+                            className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-xl cursor-pointer border border-white/10 group-hover/thumb:border-primary group-hover/thumb:scale-110 shadow-2xl transition-all duration-300 bg-neutral-900"
+                            onError={(e) => {
+                               (e.target as HTMLImageElement).src = '/logo.jpg';
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover/thumb:opacity-100 transition-opacity rounded-xl pointer-events-none flex items-center justify-center">
+                             <ImageIcon className="w-6 h-6 text-black drop-shadow-lg" />
+                          </div>
+                        </div>
                       </div>
                     </td>
                     <td className="px-4 py-4">
@@ -328,49 +333,73 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
         )}
 
         {selectedImage && (
-
-          <div className="fixed inset-0 z-110 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-110 flex items-center justify-center p-2 md:p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedImage(null)}
-              className="absolute inset-0 bg-black/98 backdrop-blur-2xl"
+              className="absolute inset-0 bg-black/95 backdrop-blur-2xl"
             />
             
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="relative w-full max-w-5xl max-h-[95vh] glass border-white/10 rounded-[2.5rem] bg-background shadow-[0_0_100px_rgba(0,0,0,1)] overflow-hidden flex flex-col"
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative w-full max-w-6xl max-h-[96vh] glass border-white/10 rounded-4xl md:rounded-[2.5rem] bg-[#0b0b0b] shadow-[0_0_100px_rgba(0,0,0,1)] overflow-hidden flex flex-col"
             >
-              <div className="flex items-center justify-between p-8 border-b border-white/5 bg-white/3">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                    <ImageIcon className="w-6 h-6 text-primary" />
+              {/* Header Controls */}
+              <div className="flex items-center justify-between p-4 md:p-8 border-b border-white/5 bg-white/3">
+                <div className="flex items-center gap-3 md:gap-4">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <ImageIcon className="w-5 h-5 md:w-6 md:h-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-black text-white uppercase tracking-tighter italic font-cinzel">Proof Intelligence</h3>
-                    <p className="text-[10px] text-primary/60 font-black uppercase tracking-widest">Secure Asset Preview</p>
+                    <h3 className="text-base md:text-lg font-black text-white uppercase tracking-tighter italic font-cinzel">Proof Intelligence</h3>
+                    <p className="text-[8px] md:text-[10px] text-primary/60 font-black uppercase tracking-widest">High-Definition Asset Preview</p>
                   </div>
                 </div>
-                <button 
-                  onClick={() => setSelectedImage(null)}
-                  className="p-4 bg-white/5 rounded-full text-white/20 hover:text-white transition-all border border-white/10 active:scale-90"
-                >
-                  <X className="w-7 h-7" />
-                </button>
+
+                <div className="flex items-center gap-2 md:gap-4">
+                   <a 
+                     href={selectedImage}
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-white/60 transition-all flex items-center gap-2"
+                   >
+                     New Tab
+                   </a>
+                   <button 
+                     onClick={() => setSelectedImage(null)}
+                     className="p-3 md:p-4 bg-white/5 rounded-full text-white/20 hover:text-white transition-all border border-white/10 active:scale-90"
+                   >
+                     <X className="w-5 h-5 md:w-7 md:h-7" />
+                   </button>
+                </div>
               </div>
 
-              <div className="flex-1 overflow-auto p-4 md:p-12 flex items-center justify-center bg-black/60 custom-scrollbar">
-                <Image 
-                  src={selectedImage} 
-                  alt="Full Proof Asset" 
-                  width={1400}
-                  height={1800}
-                  className="max-w-full h-auto rounded-3xl shadow-2xl border border-white/10"
-                  priority
-                />
+              {/* Main Content Area - Optimized for any dimension */}
+              <div className="flex-1 overflow-auto p-2 md:p-12 flex items-start justify-center bg-black/50 custom-scrollbar overscroll-none">
+                <div className="relative group min-w-full md:min-w-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img 
+                    src={selectedImage} 
+                    alt="Full Proof Asset" 
+                    className="max-w-full md:max-w-4xl h-auto rounded-xl md:rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 select-none bg-neutral-900"
+                  />
+                  
+                  {/* Floating Action Hint */}
+                  <div className="absolute top-4 left-4 flex gap-2">
+                     <div className="glass px-3 py-1 text-[8px] font-black uppercase tracking-widest text-white/60 rounded-lg">
+                        Verified Asset
+                     </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Footer Tools */}
+              <div className="p-4 md:p-6 bg-white/2 border-t border-white/5 flex items-center justify-center gap-6">
+                 <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em]">End-to-End Encrypted Verification Stream</p>
               </div>
             </motion.div>
           </div>
