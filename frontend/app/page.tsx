@@ -14,13 +14,16 @@ import {
   Loader2,
   Send,
   Coins,
-  Headset
+  Headset,
+  Wallet,
+  ArrowUpCircle
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/auth-context";
 import { useRouter } from "next/navigation";
+import { GoPanelCard } from "@/components/go-panel-card";
 
 // Constants & Data
 const WHATSAPP_URL = "https://wa.me/447735378047";
@@ -337,16 +340,16 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="space-y-16 pb-32">
+    <div className="space-y-12 md:space-y-16 pb-32 overflow-x-hidden">
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-[70vh] rounded-[3rem] overflow-hidden bg-background border border-white/10 shadow-[0_0_80px_rgba(251,191,36,0.1)] flex items-center group/hero mx-4 lg:mx-8">
-        {/* Cinematic Backdrop with Parallax-like effect */}
+      <section className="relative min-h-[60vh] md:min-h-[70vh] rounded-3xl md:rounded-[3rem] overflow-hidden bg-background border border-white/10 shadow-[0_0_80px_rgba(251,191,36,0.1)] flex items-center group/hero mx-2 md:mx-4 lg:mx-8">
+        {/* Cinematic Backdrop */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <Image 
             src="/hero_premium.png" 
             alt="Elite Backdrop" 
             fill 
-            className="object-cover opacity-60 scale-110 group-hover/hero:scale-100 transition-transform duration-[3s] ease-out" 
+            className="object-cover opacity-40 md:opacity-60 scale-110 group-hover/hero:scale-100 transition-transform duration-[3s] ease-out" 
             priority 
           />
           <div className="absolute inset-0 bg-linear-to-b from-background via-transparent to-background opacity-90" />
@@ -357,38 +360,38 @@ export default function Home() {
         <div className="absolute top-1/4 -left-20 w-80 h-80 bg-primary/20 rounded-full blur-[120px] animate-pulse" />
         <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-secondary/10 rounded-full blur-[120px] animate-pulse delay-700" />
 
-        <div className="relative z-20 w-full px-6 md:px-20 lg:px-24 py-12 md:py-24 flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-8">
+        <div className="relative z-20 w-full px-4 sm:px-10 md:px-20 lg:px-24 py-8 md:py-24 flex flex-col lg:flex-row items-center justify-between gap-8 md:gap-16">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="flex-1 space-y-12 w-full"
+            className="flex-1 space-y-8 md:space-y-12 w-full text-center lg:text-left"
           >
-            <div className="space-y-8">
-               <div className="flex flex-wrap gap-4">
+            <div className="space-y-6 md:space-y-8 flex flex-col items-center lg:items-start">
+               <div className="flex flex-wrap justify-center lg:justify-start gap-2 md:gap-4">
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="inline-flex items-center gap-3 px-5 py-2 bg-primary/10 border border-primary/20 rounded-full backdrop-blur-3xl"
+                    className="inline-flex items-center gap-2 md:gap-3 px-3 md:px-5 py-1.5 md:py-2 bg-primary/10 border border-primary/20 rounded-full backdrop-blur-3xl"
                   >
-                    <div className="w-2 h-2 rounded-full bg-primary animate-ping" />
-                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">12+ Years of Peak Trust</span>
+                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-primary animate-ping" />
+                    <span className="text-[8px] md:text-[10px] font-black text-primary uppercase tracking-[0.3em] md:tracking-[0.3em]">12+ Years Trust</span>
                   </motion.div>
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2 }}
-                    className="inline-flex items-center gap-3 px-5 py-2 bg-white/5 border border-white/10 rounded-full backdrop-blur-3xl"
+                    className="inline-flex items-center gap-2 md:gap-3 px-3 md:px-5 py-1.5 md:py-2 bg-white/5 border border-white/10 rounded-full backdrop-blur-3xl"
                   >
-                    <Coins className="w-3.5 h-3.5 text-accent" />
-                    <span className="text-[10px] font-black text-white/60 uppercase tracking-[0.3em]">Instant Payouts</span>
+                    <Coins className="w-3 md:w-3.5 h-3 md:h-3.5 text-accent" />
+                    <span className="text-[8px] md:text-[10px] font-black text-white/60 uppercase tracking-widest md:tracking-[0.3em]">Instant Payout</span>
                   </motion.div>
                </div>
                
                 <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="relative w-48 h-32 mb-4"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="relative w-32 h-20 md:w-48 md:h-32 -mb-2 md:mb-4"
                 >
                   <Image 
                     src="/logo.jpg" 
@@ -397,67 +400,85 @@ export default function Home() {
                     className="object-contain mix-blend-screen"
                   />
                 </motion.div>
-                <div className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.8] tracking-tighter italic font-cinzel">
+                <div className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] md:leading-[0.8] tracking-tighter italic font-cinzel">
                    JSR <span className="text-gradient-primary">SPORTS</span><br/>
-                   <span className="text-xl sm:text-2xl md:text-4xl lg:text-5xl not-italic font-bold tracking-[0.05em] block mt-2 opacity-90">
+                   <span className="text-base sm:text-2xl md:text-4xl lg:text-5xl not-italic font-bold tracking-[0.05em] md:tracking-[0.05em] block mt-1 md:mt-2 opacity-90">
                       ELITE ARENA
                    </span>
                 </div>
              </div>
 
-            <div className="relative max-w-lg group/search">
+            <div className="relative max-w-lg group/search mx-auto lg:mx-0">
                <div className="absolute inset-0 bg-primary/5 blur-xl group-hover/search:bg-primary/10 transition-all" />
                <input 
                   type="text" 
-                  placeholder="Search matches, leagues, or casino..." 
-                  className="relative w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-xs font-medium text-white focus:border-primary/40 transition-all outline-hidden backdrop-blur-md"
+                  placeholder="Search matches or casino..." 
+                  className="relative w-full bg-white/5 border border-white/10 rounded-xl py-3 md:py-4 pl-10 md:pl-12 pr-4 text-[10px] md:text-xs font-medium text-white focus:border-primary/40 transition-all outline-hidden backdrop-blur-md"
                />
                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-hover/search:text-primary/60 transition-colors">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                  <svg className="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                </div>
             </div>
 
-            <div>
-              <h1 className="text-[11px] sm:text-sm md:text-base font-bold text-primary tracking-widest uppercase mt-6 mb-2 font-poppins">
-                 Best Betting Site in India with Instant UPI Support
+            <div className="space-y-2">
+              <h1 className="text-[10px] sm:text-sm md:text-base font-bold text-primary tracking-widest uppercase mb-1 md:mb-2 font-poppins">
+                 Premier Betting ID Provider
               </h1>
-              <p className="text-white/50 text-sm md:text-base font-light leading-relaxed max-w-lg font-poppins">
-                Step into India&apos;s most prestigious ecosystem for premium betting IDs. Experience high-limit wagering with the speed of light. Fast UPI deposits, quick withdrawals, and 24/7 sports betting support.
+              <p className="text-white/50 text-[11px] sm:text-sm md:text-base font-light leading-relaxed max-w-md mx-auto lg:mx-0 font-poppins">
+                India&apos;s most prestigious ecosystem for betting IDs. High-limit wagering, instant UPI support, and 24/7 account management.
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 md:gap-4 w-full sm:w-auto">
                 <button 
                    onClick={() => handleGetId()}
-                   className="group relative w-full sm:w-auto px-8 py-5 sm:py-4 bg-linear-to-r from-[#fbbf24] to-[#f59e0b] text-black font-black text-[12px] uppercase tracking-[0.2em] rounded-xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_25px_rgba(251,191,36,0.35)] hover:shadow-[0_0_35px_rgba(251,191,36,0.5)] flex items-center justify-center gap-3 overflow-hidden"
+                   className="group relative w-full sm:w-auto px-6 md:px-8 py-4 sm:py-4 bg-linear-to-r from-[#fbbf24] to-[#f59e0b] text-black font-black text-[11px] md:text-[12px] uppercase tracking-[0.15em] md:tracking-[0.2em] rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center justify-center gap-3 overflow-hidden"
                 >
-                   <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000 skew-x-[-25deg]" />
-                   Get Your ID <Zap className="w-4 h-4 fill-current" />
+                   Get Your ID <Zap className="w-3.5 h-3.5 md:w-4 md:h-4 fill-current" />
                 </button>
                 <Link 
                    href={WHATSAPP_LINK} 
                    target="_blank" 
-                   className="w-full sm:w-auto px-8 py-5 sm:py-4 glass border border-white/10 text-white font-black text-[12px] uppercase tracking-[0.2em] rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-3 group"
+                   className="w-full sm:w-auto px-6 md:px-8 py-4 sm:py-4 glass border border-white/10 text-white font-black text-[11px] md:text-[12px] uppercase tracking-[0.15em] md:tracking-[0.2em] rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-3 group"
                 >
-                  <MessageSquare className="w-4 h-4 group-hover:text-primary transition-colors" /> Support
+                  <MessageSquare className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover:text-primary transition-colors" /> Support
+               </Link>
+            </div>
+
+            {/* HIGH-VISIBILITY MOBILE ACTIONS */}
+            <div className="sm:hidden grid grid-cols-2 gap-3 w-full animate-in fade-in slide-in-from-bottom-4 duration-1000">
+               <Link 
+                 href="/payment"
+                 className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-linear-to-br from-primary/20 to-primary/5 border border-primary/30 shadow-[0_0_20px_rgba(251,191,36,0.15)] active:scale-95 transition-all h-24"
+               >
+                  <Wallet className="w-6 h-6 text-primary" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Deposit</span>
+               </Link>
+               <Link 
+                 href="/withdraw"
+                 className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/10 active:scale-95 transition-all h-24"
+               >
+                  <ArrowUpCircle className="w-6 h-6 text-white/60" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Withdraw</span>
                </Link>
             </div>
           </motion.div>
 
-          {/* Featured Metric */}
+
+          {/* Featured Metric - Hidden on extra small mobile to focus on Hero */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.4 }}
-            className="relative lg:card-hover p-0.5 bg-linear-to-br from-primary/30 to-secondary/10 rounded-[3rem] shadow-[0_0_30px_rgba(251,191,36,0.12)] shrink-0 w-full lg:w-auto lg:block"
+            className="relative lg:card-hover p-0.5 bg-linear-to-br from-primary/30 to-secondary/10 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl shrink-0 w-full max-w-xs lg:w-auto mx-auto lg:mx-0"
           >
-             <div className="bg-background/95 backdrop-blur-3xl rounded-[2.9rem] p-8 space-y-6 w-72 lg:w-80 border border-[#fbbf24]/20">
-                <div className="space-y-2">
-                   <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">Current Players</p>
-                   <p className="text-6xl font-black text-white italic tracking-tighter">12,482+</p>
+             <div className="bg-background/95 backdrop-blur-3xl rounded-[2.4rem] md:rounded-[2.9rem] p-6 md:p-8 space-y-4 md:space-y-6 w-full lg:w-80 border border-[#fbbf24]/20">
+                <div className="space-y-1 md:space-y-2">
+                   <p className="text-[8px] md:text-[10px] font-black text-white/30 uppercase tracking-[0.3em] md:tracking-[0.4em]">Active Players</p>
+                   <p className="text-4xl md:text-6xl font-black text-white italic tracking-tighter">12,482+</p>
                 </div>
-                <div className="space-y-6">
-                   <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div className="space-y-4 md:space-y-6">
+                   <div className="h-1 md:h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: "85%" }}
@@ -465,11 +486,10 @@ export default function Home() {
                         className="h-full bg-linear-to-r from-primary to-secondary" 
                       />
                    </div>
-                   {/* <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Network Capacity: 85%</p> */}
                 </div>
-                <div className="pt-6 border-t border-white/5">
-                   <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] leading-relaxed">
-                      Encrypted Connection And 24*7 Deposit Withdrawal Support
+                <div className="pt-4 md:pt-6 border-t border-white/5">
+                   <p className="text-[8px] md:text-[10px] font-black text-white/20 uppercase tracking-[0.2em] leading-relaxed">
+                      Encrypted Connection • 24*7 Support
                    </p>
                 </div>
              </div>
@@ -477,15 +497,20 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 1.5 DEPOSIT & WITHDRAW GO PANEL PORTAL */}
+      <section className="container mx-auto relative px-2 py-2 md:py-4 z-30">
+        <GoPanelCard />
+      </section>
+
       {/* 2. INSTANT ID SECTION */}
-      <section className="container mx-auto px-8 relative">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-24 bg-linear-to-b from-primary/50 to-transparent" />
-        <div className="text-center space-y-3 mb-16 pt-20">
-          <h2 className="text-4xl font-black text-white italic tracking-tighter font-cinzel uppercase">Trusted Betting Access in India</h2>
-          <p className="text-[9px] font-black text-primary uppercase tracking-[0.5em]">Instant Verification and Account Approval • 4-Step Journey</p>
+      <section className="container mx-auto px-4 md:px-8 relative pt-10">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-16 md:h-24 bg-linear-to-b from-primary/50 to-transparent" />
+        <div className="text-center space-y-2 md:space-y-3 mb-10 md:mb-16 pt-12 md:pt-20">
+          <h2 className="text-2xl md:text-4xl font-black text-white italic tracking-tighter font-cinzel uppercase">Trusted Betting Guide</h2>
+          <p className="text-[8px] md:text-[9px] font-black text-primary uppercase tracking-[0.3em] md:tracking-[0.5em]">Account Verification & Access • 4-Step Journey</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-10">
            {STEPS.map((step, i) => (
              <motion.div 
               key={i}
@@ -493,81 +518,81 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.15 }}
-              className="group relative glass rounded-[2.5rem] p-10 card-hover overflow-hidden"
+              className="group relative glass rounded-3xl md:rounded-[2.5rem] p-6 md:p-10 card-hover overflow-hidden"
              >
-                <div className="absolute -top-6 -right-6 p-6 opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
-                   <span className="text-[10rem] font-black font-cinzel">{step.id}</span>
+                <div className="absolute -top-4 -right-4 p-4 opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
+                   <span className="text-7xl md:text-[10rem] font-black font-cinzel">{step.id}</span>
                 </div>
-                <div className="w-20 h-20 rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform shadow-xl shadow-primary/5">
-                   <step.icon className="w-10 h-10 text-primary" />
+                <div className="w-12 h-12 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 md:mb-10 group-hover:scale-110 transition-transform">
+                   <step.icon className="w-6 h-6 md:w-10 md:h-10 text-primary" />
                 </div>
-                <h3 className="text-2xl font-black text-white mb-4 uppercase tracking-tighter italic font-cinzel">{step.title}</h3>
-                <p className="text-sm text-white/50 leading-relaxed font-medium font-poppins">{step.desc}</p>
+                <h3 className="text-lg md:text-2xl font-black text-white mb-2 md:mb-4 uppercase tracking-tighter italic font-cinzel">{step.title}</h3>
+                <p className="text-[12px] md:text-sm text-white/50 leading-relaxed font-medium font-poppins">{step.desc}</p>
              </motion.div>
            ))}
         </div>
       </section>
 
       {/* 8. BONUS & PROMOTIONS */}
-      <section className="container mx-auto px-8 grid grid-cols-1 lg:grid-cols-3 gap-6 pt-10 pb-10">
+      <section className="container mx-auto px-4 md:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pt-6 md:pt-10">
          {BONUS_OFFERS.map((offer, i) => (
            <motion.div 
              key={i} 
              whileHover={{ scale: 1.02 }}
-             className="group relative bg-linear-to-br from-primary/10 via-background to-secondary/5 border border-white/10 rounded-3xl p-8 overflow-hidden shadow-xl"
+             className="group relative bg-linear-to-br from-primary/10 via-background to-secondary/5 border border-white/10 rounded-2xl md:rounded-3xl p-6 md:p-8 overflow-hidden shadow-xl"
            >
-              <div className="absolute -right-6 -top-6 p-10 opacity-5 group-hover:scale-110 transition-transform duration-1000 group-hover:rotate-12">
-                 <Gift className="w-24 h-24 text-primary" />
+              <div className="absolute -right-4 -top-4 p-6 opacity-5 group-hover:scale-110 transition-transform duration-1000 group-hover:rotate-12">
+                 <Gift className="w-16 h-16 md:w-24 md:h-24 text-primary" />
               </div>
-              <p className="text-[10px] font-black text-primary uppercase tracking-[0.4em] mb-4">{offer.title}</p>
-              <h3 className="text-6xl font-black text-white italic tracking-tighter mb-4 font-cinzel">{offer.val}</h3>
-              <p className="text-sm text-white/40 mb-8 font-medium font-poppins">{offer.desc}</p>
+              <p className="text-[8px] md:text-[10px] font-black text-primary uppercase tracking-[0.3em] md:tracking-[0.4em] mb-2 md:mb-4">{offer.title}</p>
+              <h3 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter mb-2 md:mb-4 font-cinzel">{offer.val}</h3>
+              <p className="text-[12px] md:text-sm text-white/40 mb-6 md:mb-8 font-medium font-poppins">{offer.desc}</p>
               <button 
                 onClick={() => handleGetId()}
-                className="inline-flex items-center gap-4 bg-primary text-black px-8 py-3 rounded-lg text-[10px] font-black uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-lg shadow-primary/20"
+                className="inline-flex items-center gap-3 md:gap-4 bg-primary text-black px-6 md:px-8 py-2.5 md:py-3 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] hover:scale-105 transition-all outline-none"
               >
-                 Activate <ArrowRight className="w-4 h-4" />
+                 Activate <ArrowRight className="w-3.5 h-3.5 md:w-4 md:h-4" />
               </button>
            </motion.div>
          ))}
       </section>
 
       {/* 5. EXCHANGE PANELS SECTION (DEMO IDs) */}
-      <section className="container mx-auto px-8 relative py-10">
-         <div className="absolute inset-0 bg-primary/2 rounded-[4rem] -z-10 border border-white/5" />
-         <div className="flex flex-col lg:flex-row items-center justify-between gap-12 mb-12 px-6">
-            <div className="space-y-6 text-center lg:text-left flex-1">
-               <h2 className="text-5xl md:text-6xl font-black text-white italic tracking-tighter font-cinzel leading-[0.85] uppercase">Fast UPI Deposit <br/><span className="text-gradient-primary">& Withdrawal</span></h2>
-               <p className="text-white/40 max-w-xl text-base font-light leading-relaxed font-poppins text-sm">Official Indian exchange infrastructure. Access high-limit liquidity via our secure panel integrations and fast UPI deposits. Check live demos below.</p>
+      <section className="container mx-auto px-4 md:px-8 relative py-8 md:py-10">
+         <div className="absolute inset-x-0 md:inset-0 bg-primary/2 rounded-3xl md:rounded-[4rem] -z-10 border border-white/5" />
+         <div className="flex flex-col lg:flex-row items-center justify-between gap-8 md:gap-12 mb-8 md:mb-12 px-4">
+            <div className="space-y-4 md:space-y-6 text-center lg:text-left flex-1">
+               <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-white italic tracking-tighter font-cinzel leading-tight uppercase">Instant <span className="text-gradient-primary">Payouts</span></h2>
+               <p className="text-white/40 max-w-xl text-[12px] md:text-base font-light leading-relaxed font-poppins">Official Indian exchange infrastructure. Access high-limit liquidity with the speed of light.</p>
             </div>
-            <div className="flex items-center gap-8 bg-white/5 p-8 rounded-[3rem] border border-white/10 backdrop-blur-3xl shadow-2xl">
+            <div className="flex items-center gap-4 md:gap-8 bg-white/5 p-4 md:p-8 rounded-2xl md:rounded-[3rem] border border-white/10 backdrop-blur-3xl shadow-2xl w-full sm:w-auto justify-center">
                 <div className="text-center space-y-1">
-                   <p className="text-4xl font-black text-primary tracking-tighter italic font-cinzel">200K+</p>
-                   <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Active IDs</p>
+                   <p className="text-2xl md:text-4xl font-black text-primary tracking-tighter italic font-cinzel">200K+</p>
+                   <p className="text-[8px] md:text-[9px] font-black text-white/30 uppercase tracking-[0.2em] md:tracking-[0.3em]">IDs</p>
                 </div>
-                <div className="w-px h-12 bg-white/10" />
+                <div className="w-px h-10 md:h-12 bg-white/10" />
                 <div className="text-center space-y-1">
-                   <p className="text-4xl font-black text-primary tracking-tighter italic font-cinzel">100%</p>
-                   <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em]">Payout Record</p>
+                   <p className="text-2xl md:text-4xl font-black text-primary tracking-tighter italic font-cinzel">100%</p>
+                   <p className="text-[8px] md:text-[9px] font-black text-white/30 uppercase tracking-[0.2em] md:tracking-[0.3em]">Record</p>
                 </div>
             </div>
          </div>
 
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl mx-auto">
+         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-10 max-w-6xl mx-auto">
             {EXCHANGES.map((ex, i) => (
                <motion.div 
                  key={i} 
                  whileHover={{ y: -10 }}
-                 className="group relative flex flex-col items-center text-center p-8 glass rounded-[3rem] hover:border-primary/40 transition-all shadow-2xl overflow-hidden"
+                 className="group relative flex flex-col items-center text-center p-6 md:p-8 glass rounded-2xl md:rounded-[3rem] transition-all shadow-2xl overflow-hidden"
                >
-                  <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/10 blur-[100px] rounded-full group-hover:bg-primary/20 transition-all" />
-                  <div className="relative w-24 h-24 mb-6 rounded-xl border border-white/10 bg-white/5 p-6 flex items-center justify-center group-hover:scale-110 group-hover:rotate-12 transition-all duration-700 shadow-2xl overflow-hidden">
-                     <Image src={ex.logo} alt={ex.name} width={64} height={64} className="object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute -top-20 -right-20 w-32 md:w-64 h-32 md:h-64 bg-primary/10 blur-[60px] md:blur-[100px] rounded-full" />
+                  <div className="relative w-16 h-16 md:w-24 md:h-24 mb-4 md:mb-6 rounded-xl border border-white/10 bg-white/5 p-4 md:p-6 flex items-center justify-center transition-all duration-700">
+                     <Image src={ex.logo} alt={ex.name} width={48} height={48} className="object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <h3 className="text-xl font-black text-white mb-4 uppercase tracking-tighter italic font-cinzel">{ex.name}</h3>
-                  <p className="text-sm text-white/40 mb-8 font-medium leading-relaxed max-w-xs font-poppins">{ex.desc}</p>
-                  <Link href={ex.link} target="_blank" className="w-full py-5 bg-white/5 hover:bg-primary hover:text-black border border-white/10 rounded-xl text-[11px] font-black uppercase tracking-[0.5em] transition-all shadow-xl group-hover:shadow-primary/20">
-                     Check Demo
+                  <h3 className="text-lg md:text-xl font-black text-white mb-2 md:mb-4 uppercase tracking-tighter italic font-cinzel">{ex.name}</h3>
+                  <p className="text-[12px] md:text-sm text-white/40 mb-6 md:mb-8 font-medium leading-relaxed max-w-xs font-poppins">{ex.desc}</p>
+                  <Link href={ex.link} target="_blank" className="w-full py-4 md:py-5 bg-white/5 hover:bg-primary hover:text-black border border-white/10 rounded-xl text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em] transition-all">
+                     View Demo
                   </Link>
                </motion.div>
             ))}
@@ -575,49 +600,50 @@ export default function Home() {
       </section>
 
       {/* 7. LIVE ACTIVITY FEED (TICKER) */}
-      <section className="bg-primary/5 border-y border-white/5 py-10 relative overflow-hidden backdrop-blur-md">
-        <div className="absolute inset-y-0 left-0 w-64 bg-linear-to-r from-background to-transparent z-10" />
-        <div className="absolute inset-y-0 right-0 w-64 bg-linear-to-l from-background to-transparent z-10" />
-        <div className="flex items-center gap-16 animate-marquee whitespace-nowrap">
+      <section className="bg-primary/5 border-y border-white/5 py-6 md:py-10 relative overflow-hidden backdrop-blur-md">
+        <div className="absolute inset-y-0 left-0 w-24 md:w-64 bg-linear-to-r from-background to-transparent z-10" />
+        <div className="absolute inset-y-0 right-0 w-24 md:w-64 bg-linear-to-l from-background to-transparent z-10" />
+        <div className="flex items-center gap-8 md:gap-16 animate-marquee whitespace-nowrap">
            {tickers.map((t, i) => (
-             <div key={i} className="flex items-center gap-5 px-10 py-4 glass border-white/10 rounded-full">
-                <div className="w-2 h-2 rounded-full bg-primary animate-ping" />
-                <span className="text-xs font-black text-white uppercase tracking-[0.2em] font-poppins">{t}</span>
+             <div key={i} className="flex items-center gap-3 md:gap-5 px-6 md:px-10 py-3 md:py-4 glass border-white/10 rounded-full shrink-0">
+                <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-primary animate-ping" />
+                <span className="text-[10px] md:text-xs font-black text-white uppercase tracking-[0.15em] md:tracking-[0.2em] font-poppins">{t}</span>
              </div>
            ))}
            {tickers.map((t, i) => (
-             <div key={i+"dup"} className="flex items-center gap-5 px-10 py-4 glass border-white/10 rounded-full">
-                <div className="w-2 h-2 rounded-full bg-primary animate-ping" />
-                <span className="text-xs font-black text-white uppercase tracking-[0.2em] font-poppins">{t}</span>
+             <div key={i+"dup"} className="flex items-center gap-3 md:gap-5 px-6 md:px-10 py-3 md:py-4 glass border-white/10 rounded-full shrink-0">
+                <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-primary animate-ping" />
+                <span className="text-[10px] md:text-xs font-black text-white uppercase tracking-[0.15em] md:tracking-[0.2em] font-poppins">{t}</span>
              </div>
            ))}
         </div>
       </section>
 
+
       {/* 3. LIVE SPORTS DASHBOARD */}
-      <section className="container mx-auto px-8 py-20 space-y-16">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
-           <div className="space-y-6">
-              <h2 className="text-5xl md:text-6xl font-black text-white italic tracking-tighter font-cinzel uppercase leading-none">GLOBAL <span className="text-gradient-primary">ARENA</span></h2>
-              <div className="flex items-center gap-4">
-                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_15px_rgba(16,185,129,1)]" />
-                  <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.5em]">
-                    Real-Time Market Data • {lastSynced ? `Synced at ${lastSynced.toLocaleTimeString()}` : 'Syncing...'} 
-                    <span className="ml-4 text-primary">Refreshing in {nextSyncIn}s</span>
+      <section className="container mx-auto px-4 md:px-8 py-10 md:py-20 space-y-8 md:space-y-16">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-10">
+           <div className="space-y-4 md:space-y-6">
+              <h2 className="text-3xl md:text-6xl font-black text-white italic tracking-tighter font-cinzel uppercase leading-none">GLOBAL <span className="text-gradient-primary">ARENA</span></h2>
+              <div className="flex items-center gap-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_15px_rgba(16,185,129,1)]" />
+                  <p className="text-[8px] md:text-[10px] font-black text-white/40 uppercase tracking-[0.3em] md:tracking-[0.5em]">
+                    Live {lastSynced ? `• ${lastSynced.toLocaleTimeString()}` : ''} 
+                    <span className="ml-2 text-primary">{nextSyncIn}s</span>
                   </p>
               </div>
            </div>
            
-           <div className="flex flex-wrap items-center gap-3 bg-white/5 p-2 rounded-2xl border border-white/5 backdrop-blur-xl">
+           <div className="flex flex-wrap items-center gap-2 bg-white/5 p-1.5 rounded-xl border border-white/5 backdrop-blur-xl shrink-0">
               {['all', 'cricket', 'soccer', 'tennis'].map((s) => (
                 <button
                   key={s}
                   onClick={() => setSelectedSport(s)}
                   className={cn(
-                    "px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all",
+                    "px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-all",
                     selectedSport === s 
-                      ? "bg-primary text-black shadow-lg shadow-primary/20" 
-                      : "text-white/40 hover:text-white hover:bg-white/5"
+                      ? "bg-primary text-black" 
+                      : "text-white/40 hover:text-white"
                   )}
                 >
                   {s}
@@ -625,25 +651,25 @@ export default function Home() {
               ))}
            </div>
 
-           <Link href="/sports" className="group flex items-center gap-4 text-primary text-[10px] font-black uppercase tracking-[0.4em] border-b border-primary/20 pb-2 hover:border-primary transition-all">
-              Full Board <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
+           <Link href="/sports" className="group flex items-center gap-2 text-primary text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em] border-b border-primary/20 pb-1 hover:border-primary transition-all self-start lg:self-end">
+              Board <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
            </Link>
         </div>
 
         {(loadingMatches && liveMatches.length === 0) ? (
-          <div className="flex flex-col items-center justify-center py-40 space-y-8 glass rounded-[4rem] border-dashed">
-              <Loader2 className="w-16 h-16 text-primary animate-spin" />
-              <p className="text-[11px] font-black text-white/30 uppercase tracking-[0.5em]">Tuning Satellite Frequencies...</p>
+          <div className="flex flex-col items-center justify-center py-24 md:py-40 space-y-6 glass rounded-4xl border-dashed">
+              <Loader2 className="w-10 h-10 md:w-16 md:h-16 text-primary animate-spin" />
+              <p className="text-[10px] md:text-[11px] font-black text-white/30 uppercase tracking-[0.4em]">Connecting Server...</p>
           </div>
         ) : liveMatches.filter(m => selectedSport === 'all' || m.sport === selectedSport).length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32 space-y-4 glass rounded-[4rem] border border-white/5 bg-white/2">
-             <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center">
-                <ShieldCheck className="w-6 h-6 text-white/20" />
+          <div className="flex flex-col items-center justify-center py-20 md:py-32 space-y-4 glass rounded-[2rem] md:rounded-[4rem] border border-white/5 bg-white/2">
+             <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                <ShieldCheck className="w-5 h-5 text-white/20" />
              </div>
-             <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">No Live Events in this category</p>
+             <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.4em]">No Live Events</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {liveMatches
               .filter(m => selectedSport === 'all' || m.sport === selectedSport)
               .map((match) => (
@@ -652,32 +678,32 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="group relative bg-white/2 border border-white/5 rounded-3xl p-6 space-y-6 hover:bg-white/5 transition-all hover:border-primary/20"
+                className="group relative bg-white/2 border border-white/5 rounded-2xl md:rounded-3xl p-5 md:p-6 space-y-4 md:space-y-6 hover:bg-white/5 transition-all"
               >
-                 <div className="flex justify-between items-center opacity-40 group-hover:opacity-100 transition-opacity">
-                    <span className="text-[9px] font-black text-white uppercase tracking-[0.2em]">{match.league}</span>
-                    <span className="text-[9px] font-bold text-primary flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> {match.detail}
+                 <div className="flex justify-between items-center opacity-60">
+                    <span className="text-[8px] md:text-[9px] font-black text-white uppercase tracking-[0.2em] truncate mr-2">{match.league}</span>
+                    <span className="text-[8px] md:text-[9px] font-bold text-primary flex items-center gap-1.5 shrink-0">
+                      <span className="w-1 h-1 rounded-full bg-primary animate-pulse" /> {match.detail}
                     </span>
                  </div>
 
-                 <div className="space-y-4">
+                 <div className="space-y-3 md:space-y-4">
                     <div className="flex items-center justify-between">
-                       <p className="text-lg font-bold text-white/90 font-cinzel tracking-tight">{match.team1}</p>
-                       <p className="text-2xl font-black text-primary italic">{match.score1}</p>
+                       <p className="text-base md:text-lg font-bold text-white/90 font-cinzel tracking-tight">{match.team1}</p>
+                       <p className="text-xl md:text-2xl font-black text-primary italic">{match.score1}</p>
                     </div>
                     <div className="flex items-center justify-between">
-                       <p className="text-lg font-bold text-white/90 font-cinzel tracking-tight">{match.team2}</p>
-                       <p className="text-2xl font-black text-primary italic">{match.score2}</p>
+                       <p className="text-base md:text-lg font-bold text-white/90 font-cinzel tracking-tight">{match.team2}</p>
+                       <p className="text-xl md:text-2xl font-black text-primary italic">{match.score2}</p>
                     </div>
                  </div>
 
                  
-                 <div className="grid grid-cols-3 gap-2">
+                 <div className="grid grid-cols-3 gap-1.5 md:gap-2">
                     {[1, 'X', 2].map(type => (
-                       <div key={type} className="p-2 bg-white/5 rounded-lg text-center cursor-pointer hover:bg-primary border border-transparent hover:border-primary transition-all group/odd">
+                       <div key={type} className="p-2 md:p-2 bg-white/5 rounded-lg text-center cursor-pointer hover:bg-primary border border-transparent hover:border-primary transition-all group/odd">
                           <p className="text-[7px] text-white/40 uppercase font-black group-hover/odd:text-black">{type}</p>
-                          <p className="text-[11px] font-black text-primary group-hover/odd:text-black">{(1.5 + Math.random() * 2).toFixed(2)}</p>
+                          <p className="text-[10px] md:text-[11px] font-black text-primary group-hover/odd:text-black">{(1.5 + Math.random() * 2).toFixed(2)}</p>
                        </div>
                     ))}
                  </div>
@@ -685,13 +711,13 @@ export default function Home() {
                  <div className="pt-3 border-t border-white/5 flex gap-2">
                     <button 
                       onClick={() => handleGetId()}
-                      className="flex-1 py-3 bg-primary text-black text-[10px] font-black uppercase tracking-[0.2em] rounded-xl text-center hover:scale-[1.02] transition-all active:scale-95 shadow-lg shadow-primary/10"
+                      className="flex-1 py-3 md:py-3 bg-primary text-black text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] rounded-xl text-center active:scale-95 transition-all shadow-lg"
                     >
-                       Place Bet
+                       Bet Now
                     </button>
                     <button 
                       onClick={() => handleGetId()}
-                      className="px-5 py-3 bg-white/5 text-white/40 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl text-center hover:bg-white/10 hover:text-white transition-all"
+                      className="px-4 py-3 bg-white/5 text-white/40 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] rounded-xl text-center"
                     >
                        Market
                     </button>
@@ -703,16 +729,16 @@ export default function Home() {
       </section>
 
       {/* 4. POPULAR CASINO GAMES SHOWCASE */}
-      <section className="container mx-auto px-8 py-20">
-         <div className="flex flex-col md:flex-row items-center justify-between mb-24 gap-10">
-            <div className="space-y-6">
-               <h2 className="text-5xl font-black text-white italic tracking-tighter font-cinzel uppercase">GRAND <span className="text-gradient-gold">CASINO</span></h2>
-               <p className="text-[11px] font-black text-accent uppercase tracking-[1em]">The Royal Gaming Floor</p>
+      <section className="container mx-auto px-4 md:px-8 py-10 md:py-20 overflow-hidden">
+         <div className="flex flex-col md:flex-row items-center justify-between mb-12 md:mb-24 gap-6 md:gap-10">
+            <div className="space-y-4 md:space-y-6 text-center md:text-left">
+               <h2 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter font-cinzel uppercase leading-none text-center">GRAND <span className="text-gradient-gold">CASINO</span></h2>
+               <p className="text-[9px] md:text-[11px] font-black text-accent uppercase tracking-[0.5em] md:tracking-[1em]">Royal Gaming Arena</p>
             </div>
             <div className="h-px flex-1 bg-linear-to-r from-accent/30 to-transparent hidden md:block mx-12" />
          </div>
 
-         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-8">
             {CASINO_GAMES.map((game, i) => (
               <motion.div 
                 key={i}
@@ -720,20 +746,20 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="group relative h-[450px] rounded-[3rem] overflow-hidden border border-white/10 cursor-pointer shadow-2xl"
+                className="group relative h-[300px] md:h-[450px] rounded-3xl md:rounded-[3rem] overflow-hidden border border-white/10 cursor-pointer shadow-2xl"
               >
                  <Image src={game.image} alt={game.name} fill className="object-cover opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out" />
                  <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent opacity-80" />
-                 <div className="absolute top-6 left-6">
-                    <span className="text-[9px] font-black text-accent bg-accent/10 border border-accent/20 px-3 py-1.5 rounded-full shadow-lg uppercase tracking-[0.2em] backdrop-blur-md">{game.type}</span>
+                 <div className="absolute top-4 left-4 md:top-6 md:left-6">
+                    <span className="text-[7px] md:text-[9px] font-black text-accent bg-accent/10 border border-accent/20 px-2 md:px-3 py-1 md:py-1.5 rounded-full shadow-lg uppercase tracking-[0.1em] md:tracking-[0.2em] backdrop-blur-md">{game.type}</span>
                  </div>
-                 <div className="absolute bottom-8 left-8 right-8 space-y-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <h3 className="text-3xl font-black text-white italic leading-none font-cinzel">{game.name.toUpperCase()}</h3>
+                 <div className="absolute bottom-4 left-4 right-4 md:bottom-8 md:left-8 md:right-8 space-y-4 md:space-y-6">
+                    <h3 className="text-lg md:text-3xl font-black text-white italic leading-none font-cinzel">{game.name.toUpperCase()}</h3>
                     <button 
                       onClick={() => handleGetId()}
-                      className="block w-full text-center glass-gold hover:bg-accent hover:text-black py-5 rounded-lg text-[10px] font-black text-white uppercase tracking-[0.3em] transition-all"
+                      className="block w-full text-center glass-gold hover:bg-accent hover:text-black py-3 md:py-5 rounded-lg text-[8px] md:text-[10px] font-black text-white uppercase tracking-[0.2em] md:tracking-[0.3em] transition-all"
                     >
-                       Enter Game
+                       Play Now
                     </button>
                  </div>
               </motion.div>
@@ -743,44 +769,44 @@ export default function Home() {
 
 
       {/* 6. VIP CLUB SECTION */}
-      <section className="container mx-auto px-8 py-20">
-         <div className="text-center space-y-4 mb-16">
-            <h2 className="text-5xl font-black text-white italic tracking-tighter font-cinzel uppercase">THE <span className="text-gradient-gold">VIP</span> SYNDICATE</h2>
-            <p className="text-[11px] font-black text-accent uppercase tracking-[0.8em]">Reserved for the distinguished elite</p>
+      <section className="container mx-auto px-4 md:px-8 py-10 md:py-20">
+         <div className="text-center space-y-3 md:space-y-4 mb-10 md:mb-16">
+            <h2 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter font-cinzel uppercase">VIP <span className="text-gradient-gold">CLUB</span></h2>
+            <p className="text-[9px] md:text-[11px] font-black text-accent uppercase tracking-[0.4em] md:tracking-[0.8em]">Reserved for the distinguished elite</p>
          </div>
 
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-10">
             {VIP_LEVELS.map((vip, i) => (
               <motion.div 
                 key={i}
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -15 }}
+                whileHover={{ y: -10 }}
                 className={cn(
-                  "relative rounded-3xl p-px overflow-hidden shadow-2xl transition-all",
-                  vip.level === "Gold" && "scale-105 z-20 shadow-accent/20 border-accent/30",
-                  vip.level === "Platinum" && "shadow-primary/20"
+                  "relative rounded-2xl md:rounded-3xl p-px overflow-hidden shadow-2xl transition-all",
+                  vip.level === "Gold" && "scale-[1.02] sm:scale-105 z-20 border-accent/30",
+                  vip.level === "Platinum" && "shadow-primary/10"
                 )}
               >
                  <div className={cn("absolute inset-0 bg-linear-to-br opacity-20", vip.color)} />
-                 <div className="relative h-full bg-background/90 backdrop-blur-3xl rounded-[2.4rem] p-6 flex flex-col items-center border border-white/5">
-                    <p className={cn("text-xl font-black italic tracking-tighter mb-4 bg-linear-to-r bg-clip-text text-transparent uppercase font-cinzel", vip.color)}>{vip.level}</p>
+                 <div className="relative h-full bg-background/90 backdrop-blur-3xl rounded-[1.4rem] md:rounded-[2.4rem] p-5 md:p-6 flex flex-col items-center border border-white/5">
+                    <p className={cn("text-lg md:text-xl font-black italic tracking-tighter mb-3 md:mb-4 bg-linear-to-r bg-clip-text text-transparent uppercase font-cinzel text-center", vip.color)}>{vip.level}</p>
                     <div className="w-full space-y-2 mb-6">
                        {vip.perks.map((p, idx) => (
                           <div key={idx} className="flex items-center gap-2 group/perk">
-                             <div className="w-3.5 h-3.5 rounded-full bg-primary/20 flex items-center justify-center group-hover/perk:bg-primary/40 transition-colors">
-                                <CheckCircle2 className="w-2 h-2 text-primary" />
+                             <div className="w-3 h-3 md:w-3.5 md:h-3.5 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                                <CheckCircle2 className="w-1.5 h-1.5 md:w-2 md:h-2 text-primary" />
                              </div>
-                             <span className="text-[10px] font-bold text-white/50 font-poppins">{p}</span>
+                             <span className="text-[10px] md:text-[10px] font-bold text-white/50 font-poppins">{p}</span>
                           </div>
                        ))}
                     </div>
                      <button 
                        onClick={() => handleGetId()}
-                       className="mt-auto w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] text-white transition-all text-center"
+                       className="mt-auto w-full py-2.5 md:py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-white transition-all text-center"
                      >
-                        Request Upgrade
+                        Upgrade Access
                      </button>
                  </div>
               </motion.div>
@@ -788,85 +814,50 @@ export default function Home() {
          </div>
       </section>
 
-
       {/* 8.5 SEO AND FAQ SECTION */}
-      <section className="container mx-auto px-8 py-20">
-         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            {/* SEO Content Block */}
-            <div className="space-y-8">
-               <h2 className="text-4xl font-black text-white italic tracking-tighter font-cinzel">Why Choose JSR Sports?</h2>
-               <div className="space-y-6 text-sm text-white/50 font-poppins leading-relaxed">
+      <section className="container mx-auto px-4 md:px-8 py-10 md:py-20">
+         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16">
+            <div className="space-y-6 md:space-y-8">
+               <div className="space-y-4">
+                  <h2 className="text-3xl md:text-5xl font-black text-white italic tracking-tighter uppercase font-cinzel leading-none"><span className="text-primary text-xl md:text-2xl block not-italic mb-2 tracking-[0.2em]">ELITE STATUS</span>THE #1 BETTING <br/>DYNASTY IN INDIA</h2>
+                  <div className="h-1 w-20 bg-primary" />
+               </div>
+               <div className="space-y-6 text-white/40 leading-relaxed font-poppins text-sm md:text-base">
                   <p>
-                    JSR Sports is recognized as a leader for <strong>Trusted Betting Access in India</strong>. 
-                    Whether you are enjoying premium casino games or looking for live sports markets, we provide unparalleled speed 
-                    and security. With our <strong>Fast UPI Deposit & Withdrawal</strong> system, your funds are always 
-                    available when you need them.
+                    JSR Sports stands as the definitive authority for online betting IDs, trusted by over 200,000 professional players across India. We provide exclusive white-label access to major exchanges like All Panel, Go Exchange, and Lotus, ensuring that every member experiences the pinnacle of secure gambling.
                   </p>
                   <p>
-                    We offer <strong>24/7 Sports Betting Support</strong> via WhatsApp. From creating your account, 
-                    understanding the <Link href="/upi-betting-site-india" className="text-primary hover:underline">UPI betting process</Link>, 
-                    to exploring top cricket exchanges, our instant verification ensures you never miss out. Our platform connects you 
-                    with the most secure and reputable exchanges in India.
+                    Our infrastructure is purpose-built for the Indian market, featuring 2-minute UPI deposit/withdrawal loops and 24/7 dedicated account managers available via WhatsApp. Whether you are looking for high-limit cricket betting or the thrill of live royal casino games, JSR Sports is your gateway to an elite gaming experience.
                   </p>
+                  <div className="flex flex-wrap gap-3 pt-4">
+                     {TRUST_BADGES.map((b, i) => (
+                       <div key={i} className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full">
+                          <b.icon className="w-4 h-4 text-primary" />
+                          <span className="text-[9px] font-black uppercase tracking-widest text-white/60">{b.label}</span>
+                       </div>
+                     ))}
+                  </div>
                </div>
             </div>
 
-            {/* FAQ Block */}
-            <div className="space-y-8">
-               <h2 className="text-4xl font-black text-white italic tracking-tighter font-cinzel text-gradient-gold">Frequently Asked</h2>
+            <div className="space-y-6">
+               <h3 className="text-xl md:text-2xl font-black text-white italic tracking-tighter uppercase font-cinzel">Operational FAQ</h3>
                <div className="space-y-4">
                   {[
-                    { q: "How do I get a betting ID on JSR Sports?", a: "Click on 'Get ID' to connect with our WhatsApp support. Our team will verify your details and instantly provide your official login credentials." },
-                    { q: "How do I deposit using UPI?", a: "Once registered, navigate to the payment menu. Select UPI, enter the transfer amount, complete the payment on your authorized app, and upload the screenshot." },
-                    { q: "How long does account approval take?", a: "We feature an instant verification system. Standard account approvals are completely processed within 2 minutes of verification." },
-                    { q: "How do I upload payment proof?", a: "After making your fast UPI deposit, simply send the payment screenshot with the UTR number to our 24/7 WhatsApp support line." },
-                    { q: "How do withdrawals work?", a: "Withdrawals are processed instantly. Request a payout through our support channel, and funds will be sent directly to your registered UPI or bank account within minutes." },
-                  ].map((faq, idx) => (
-                    <div key={idx} className="glass p-6 rounded-2xl border border-white/5 transition-all hover:bg-white/5">
-                        <div className="flex justify-between items-center">
-                           <h3 className="text-sm font-bold text-white font-poppins">{faq.q}</h3>
-                        </div>
-                        <p className="text-xs text-white/40 mt-3 font-poppins leading-relaxed">{faq.a}</p>
+                    { q: "How quickly can I get an All Panel ID?", a: "Activation is instantaneous. Once you connect with our WhatsApp support, your ID is delivered within 60 seconds." },
+                    { q: "What is the minimum deposit amount?", a: "To maintain our elite service standards, the minimum deposit is ₹500, enabling full access to all live arenas." },
+                    { q: "Is withdrawal really instant?", a: "Yes. Our automated UPI systems process withdrawals in under 2 minutes, 24 hours a day, including weekends." },
+                    { q: "Are my winnings safe with JSR Sports?", a: "Absolutely. With 12 years of operational excellence and a zero-default payout record, we are the most secure portal in the industry." }
+                  ].map((faq, i) => (
+                    <div key={i} className="bg-white/2 border border-white/5 p-5 md:p-6 rounded-2xl hover:bg-white/5 transition-all group">
+                       <h4 className="text-[12px] md:text-sm font-black text-white uppercase tracking-wider mb-2 group-hover:text-primary transition-colors">{faq.q}</h4>
+                       <p className="text-[11px] md:text-sm text-white/30 font-medium leading-relaxed font-poppins">{faq.a}</p>
                     </div>
                   ))}
                </div>
             </div>
          </div>
       </section>
-      
-      {/* FAQ Schema */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            "mainEntity": [
-              { "@type": "Question", "name": "How do I get a betting ID on JSR Sports?", "acceptedAnswer": { "@type": "Answer", "text": "Click on 'Get ID' to connect with our WhatsApp support. Our team will verify your details and instantly provide your official login credentials." } },
-              { "@type": "Question", "name": "How do I deposit using UPI?", "acceptedAnswer": { "@type": "Answer", "text": "Once registered, navigate to the payment menu. Select UPI, enter the transfer amount, complete the payment on your authorized app, and upload the screenshot." } },
-              { "@type": "Question", "name": "How long does account approval take?", "acceptedAnswer": { "@type": "Answer", "text": "We feature an instant verification system. Standard account approvals are completely processed within 2 minutes of verification." } },
-              { "@type": "Question", "name": "How do I upload payment proof?", "acceptedAnswer": { "@type": "Answer", "text": "After making your fast UPI deposit, simply send the payment screenshot with the UTR number to our 24/7 WhatsApp support line." } },
-              { "@type": "Question", "name": "How do withdrawals work?", "acceptedAnswer": { "@type": "Answer", "text": "Withdrawals are processed instantly. Request a payout through our support channel, and funds will be sent directly to your registered UPI or bank account within minutes." } }
-            ]
-          })
-        }}
-      />
-
-      {/* 9. TRUST SECTION */}
-      <section className="container mx-auto px-8 relative py-20 mb-20">
-         <div className="absolute inset-0 glass rounded-[6rem] -z-10" />
-         <div className="grid grid-cols-2 lg:grid-cols-4 gap-16 text-center">
-            {TRUST_BADGES.map((badge, i) => (
-              <motion.div key={i} whileHover={{ y: -5 }} className="space-y-8 group">
-                 <div className="w-24 h-24 rounded-[2.5rem] bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 group-hover:rotate-6 transition-all duration-500 shadow-2xl">
-                    <badge.icon className="w-10 h-10 text-primary" />
-                 </div>
-                 <p className="text-sm font-black text-white/80 uppercase tracking-[0.4em] font-cinzel leading-relaxed">{badge.label}</p>
-              </motion.div>
-            ))}
-         </div>
-      </section>
-      
     </div>
   );
 }

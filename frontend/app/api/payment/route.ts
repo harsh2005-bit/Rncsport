@@ -83,11 +83,12 @@ export async function POST(req: Request) {
       screenshotUrl
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("CRITICAL PAYMENT ERROR:", error);
+    const err = error as Error;
     return NextResponse.json({ 
-      message: error.message || "Internal server error during payment submission",
-      error: error.toString()
+      message: err.message || "Internal server error during payment submission",
+      error: err.toString()
     }, { status: 500 });
   }
 }
@@ -112,7 +113,7 @@ export async function GET(req: Request) {
     }));
     
     return NextResponse.json(items);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("GET Payments Error:", error);
     return NextResponse.json({ message: "Failed to fetch payments" }, { status: 500 });
   }
@@ -126,20 +127,68 @@ export async function PATCH(req: Request) {
        return NextResponse.json({ message: "Unauthorized: Admin Access Only" }, { status: 401 });
     }
 
-    const { id, status } = await req.json();
+    const body = await req.json();
+    const { id, status, bettingId, bettingPassword, panelLink } = body;
+    
     if (!id || !status) {
       return NextResponse.json({ message: "Missing id or status" }, { status: 400 });
     }
 
+    // Validation for approval
+    if (status === "approved") {
+      if (!bettingId || !bettingPassword || !panelLink) {
+        return NextResponse.json({ message: "Betting ID, Password, and Panel Link are required for approval" }, { status: 400 });
+      }
+    }
+
+    const adminMessage = status === "approved" ? "Payment verified successfully" : "Payment rejected by admin";
+
     await adminDb.collection("payments").doc(id).update({
       status,
+      bettingId: bettingId || null,
+      bettingPassword: bettingPassword || null,
+      panelLink: panelLink || null,
+      adminMessage,
       notified: false,
       updatedAt: new Date(),
     });
 
+    const paymentDoc = await adminDb.collection("payments").doc(id).get();
+    if (paymentDoc.exists) {
+      const paymentData = paymentDoc.data();
+      const userId = paymentData?.userId;
+      
+      if (userId) {
+        // Create Notification with credentials if approved
+        const notificationData: Record<string, any> = {
+          userId,
+          type: "payment",
+          title: status === "approved" ? "Payment Approved ✅" : "Payment Rejected ❌",
+          message: status === "approved" ? "Your betting account is ready" : "Your deposit has been rejected ❌",
+          status,
+          paymentId: id,
+          read: false,
+          createdAt: new Date(),
+        };
+
+
+        if (status === "approved") {
+          notificationData.credentials = {
+            id: bettingId,
+            password: bettingPassword,
+            link: panelLink
+          };
+        }
+
+        await adminDb.collection("notifications").add(notificationData);
+        console.log(`[PAYMENT_API] Notification created for user: ${userId}`);
+      }
+    }
+
+
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("PATCH Payment Error:", error);
-    return NextResponse.json({ message: error.message }, { status: 500 });
+    return NextResponse.json({ message: (error as Error).message }, { status: 500 });
   }
 }

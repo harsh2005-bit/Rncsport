@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore"; // Added
+import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getAnalytics, isSupported } from "firebase/analytics";
 
@@ -14,10 +14,14 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+// Task 1 & 2: Ensure single initialization
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
+// CRITICAL: Explicitly using the database ID that works with your project console.
+// If the error was 'Database (default) not found', use 'default' or initialize explicitly.
+const db = getFirestore(app, "default"); 
+
 const auth = getAuth(app);
-const db = getFirestore(app);
 const storage = getStorage(app);
 
 // Analytics - only in browser

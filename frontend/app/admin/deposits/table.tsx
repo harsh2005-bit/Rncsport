@@ -5,7 +5,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { MessageCircle, X, Clock, Loader2, ArrowLeft, XCircle, ImageIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";interface PaymentRequest {
+import { cn } from "@/lib/utils";
+
+interface PaymentRequest {
   id: string;
   name: string;
   phoneNumber: string;
@@ -17,6 +19,7 @@ import { cn } from "@/lib/utils";interface PaymentRequest {
   createdAt: Date | string | number | null;
 }
 
+
 export default function AdminTable({ adminKey }: { adminKey: string }) {
   const router = useRouter();
   const [payments, setPayments] = useState<PaymentRequest[]>([]);
@@ -25,46 +28,67 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
   const [isPending, startTransition] = useTransition();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   // Switching to STABLE API FETCHING (Guaranteed to work bypasses client-side rules)
-  const fetchPayments = async (isInitial = false) => {
-    try {
-      const response = await fetch('/api/payment', {
-        headers: { 
-          'x-admin-key': adminKey 
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setPayments(data);
-      }
-    } catch (error) {
-      console.error("API Fetch Error:", error);
-    } finally {
-      if (isInitial) setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchPayments(true);
+    const fetchData = async (isInitial = false) => {
+      try {
+        const response = await fetch('/api/payment', {
+          headers: { 
+            'x-admin-key': adminKey 
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setPayments(data);
+        }
+      } catch (error) {
+        console.error("API Fetch Error:", error);
+      } finally {
+        if (isInitial) setLoading(false);
+      }
+    };
+
+    fetchData(true);
     // Polling every 5 seconds for stability and "real-time" feel
-    const interval = setInterval(() => fetchPayments(false), 5000);
+    const interval = setInterval(() => fetchData(false), 5000);
     return () => clearInterval(interval);
   }, [adminKey]);
 
-  const updateStatus = async (id: string, status: string) => {
+
+
+  const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [credId, setCredId] = useState("");
+  const [credPass, setCredPass] = useState("");
+  const [credLink, setCredLink] = useState("");
+
+  const updateStatus = async (id: string, status: string, creds?: any) => {
+    if (status === "approved" && !creds) {
+      setApprovingId(id);
+      return;
+    }
+
     startTransition(async () => {
       try {
+        const payload = { 
+          id, 
+          status,
+          ...(creds || {})
+        };
+
         const response = await fetch('/api/payment', {
           method: 'PATCH',
           headers: { 
             'Content-Type': 'application/json',
             'x-admin-key': adminKey
           },
-          body: JSON.stringify({ id, status })
+          body: JSON.stringify(payload)
         });
         
         if (response.ok) {
-          // Optimistic state update
           setPayments(prev => prev.map(p => p.id === id ? { ...p, status: status } : p));
+          setApprovingId(null);
+          setCredId("");
+          setCredPass("");
+          setCredLink("");
         } else {
           const res = await response.json();
           alert(`Error: ${res.message || 'Update failed'}`);
@@ -75,6 +99,7 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
       }
     });
   };
+
 
   const filteredItems = payments.filter(item => {
     const s = item.status?.toUpperCase();
@@ -176,13 +201,13 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
                     </td>
                     <td className="px-4 py-4 text-center">
                       <div className="flex justify-center">
-                        <motion.img 
-                          whileHover={{ scale: 1.2 }}
+                        <img 
+                          alt="Proof"
                           onClick={() => setSelectedImage(item.screenshotUrl)}
                           src={item.screenshotUrl} 
-                          className="w-12 h-14 object-cover rounded-lg cursor-pointer border border-white/10 hover:border-primary/60 shadow-xl transition-all"
+                          className="w-16 h-16 object-cover rounded cursor-pointer border border-white/10 hover:border-primary/60 shadow-xl transition-all"
                           onError={(e) => {
-                             (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1NiIgaGVpZ2h0PSI2NCIgZmlsbD0ibm9uZSI+PHJlY3Qgd2lkdGg9IjU2IiBoZWlnaHQ9IjY0IiBmaWxsPSIjMWExYTFhIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IiMzMzMiIGZvbnQtc2l6ZT0iOCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TElOSyBSRUQ8L3RleHQ+PC9zdmc+';
+                             (e.target as HTMLImageElement).src = '/logo.jpg';
                           }}
                         />
                       </div>
@@ -230,7 +255,80 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
       </div>
 
       <AnimatePresence>
+        {approvingId && (
+          <div className="fixed inset-0 z-120 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setApprovingId(null)}
+              className="absolute inset-0 bg-black/90 backdrop-blur-xl"
+            />
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-md glass border border-white/10 rounded-[2.5rem] bg-[#0b0b0b] shadow-2xl overflow-hidden flex flex-col"
+            >
+              <div className="p-8 border-b border-white/5 bg-white/2 flex items-center justify-between">
+                <div>
+                   <h3 className="text-xl font-black text-white italic font-cinzel uppercase tracking-tighter">Approval Intelligence</h3>
+                   <p className="text-[9px] text-primary/60 font-black uppercase tracking-widest">Assign Member Access</p>
+                </div>
+                <button 
+                  onClick={() => setApprovingId(null)}
+                  className="p-3 bg-white/5 rounded-full text-white/20 hover:text-white transition-all border border-white/10"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-8 space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Betting ID</label>
+                  <input 
+                    value={credId}
+                    onChange={(e) => setCredId(e.target.value)}
+                    placeholder="e.g. USER123"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:border-primary/40 outline-none transition-all font-bold"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Password</label>
+                  <input 
+                    value={credPass}
+                    onChange={(e) => setCredPass(e.target.value)}
+                    placeholder="Enter Password"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:border-primary/40 outline-none transition-all font-bold"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Panel Link (URL)</label>
+                  <input 
+                    value={credLink}
+                    onChange={(e) => setCredLink(e.target.value)}
+                    placeholder="https://panel.com"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:border-primary/40 outline-none transition-all font-bold"
+                  />
+                </div>
+
+                <div className="pt-4">
+                  <button
+                    onClick={() => updateStatus(approvingId, "approved", { bettingId: credId, bettingPassword: credPass, panelLink: credLink })}
+                    disabled={!credId || !credPass || !credLink}
+                    className="w-full py-4 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20 disabled:opacity-30 disabled:hover:scale-100"
+                  >
+                    Authorize & Notify Member
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
         {selectedImage && (
+
           <div className="fixed inset-0 z-110 flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}

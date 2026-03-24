@@ -18,7 +18,9 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  ChevronRight
+  ChevronRight,
+  Wallet,
+  ArrowUpCircle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -29,8 +31,15 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const { user, logout, openAuthModal, notifications } = useAuth();
+  const { user, logout, openAuthModal, notifications, markNotificationAsRead } = useAuth();
+  
+  // Debug NAVBAR STATE
+  useEffect(() => {
+    console.log("NAVBAR NOTIFICATIONS STATE:", notifications);
+  }, [notifications]);
+
   const router = useRouter();
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
 
@@ -70,14 +79,14 @@ export function Navbar() {
 
   return (
     <nav className={cn(
-      "fixed top-0 left-0 right-0 h-20 flex items-center transition-all duration-500 z-50",
+      "fixed top-0 left-0 right-0 h-20 flex items-center transition-all duration-500",
       isScrolled ? "bg-black/95 backdrop-blur-md border-b border-white/10 shadow-2xl" : "bg-transparent"
-    )}>
+    )} style={{ zIndex: 10000 }}>
       <div className="w-full max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between">
         {/* Logo Section */}
-        <div className="flex items-center gap-4 lg:gap-8">
-          <Link href="/" className="group flex items-center gap-4 text-2xl font-black tracking-tighter text-white font-cinzel">
-            <div className="relative w-28 md:w-32 h-12 md:h-14 group-hover:scale-105 transition-all">
+        <div className="flex items-center gap-2 lg:gap-8">
+          <Link href="/" className="group flex items-center gap-2 text-2xl font-black tracking-tighter text-white font-cinzel">
+            <div className="relative w-16 sm:w-28 md:w-32 h-10 md:h-14 group-hover:scale-105 transition-all">
               <Image 
                 src="/logo.jpg" 
                 alt="JSR SPORTS" 
@@ -114,25 +123,40 @@ export function Navbar() {
             />
           </div>
 
-          {/* Payment Button - Hidden on small mobile */}
-          <Link
-            href="/payment"
-            className="hidden sm:flex px-6 py-2.5 rounded-xl bg-linear-to-r from-primary to-secondary text-black text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
-          >
-            Submit Payment
-          </Link>
+          {/* Quick Action Buttons (Mobile + Desktop) */}
+          <div className="flex items-center gap-2">
+            <Link
+              href="/payment"
+              className="flex items-center gap-1.5 px-3 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl bg-linear-to-r from-primary to-secondary text-black text-[9px] md:text-[10px] font-black uppercase tracking-widest md:tracking-[0.2em] shadow-[0_0_15px_rgba(251,191,36,0.2)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+            >
+              <Wallet size={12} className="md:hidden" />
+              <span className="hidden sm:inline">Submit Payment</span>
+              <span className="sm:hidden">Deposit</span>
+            </Link>
+            
+            <Link
+              href="/withdraw"
+              className="flex items-center gap-1.5 px-3 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl bg-white/5 border border-white/10 text-white text-[9px] md:text-[10px] font-black uppercase tracking-widest md:tracking-[0.2em] hover:bg-white/10 hover:border-primary/40 transition-all whitespace-nowrap"
+            >
+              <ArrowUpCircle size={12} className="md:hidden" />
+              <span className="hidden sm:inline">Withdraw Funds</span>
+              <span className="sm:hidden">Withdraw</span>
+            </Link>
+          </div>
 
           {user ? (
             <div className="flex items-center gap-2 md:gap-4">
-              {/* Notifications Dropdown */}
-              <div className="relative z-50 flex items-center" ref={notificationsRef}>
+              {/* Notifications */}
+              <div className="relative z-10001 flex items-center" ref={notificationsRef}>
                 <button 
                   onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                  className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-primary hover:bg-white/10 transition-all relative group cursor-pointer"
+                  className="p-2 sm:p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-primary hover:bg-white/10 transition-all relative group cursor-pointer"
                 >
-                  <Bell size={20} />
-                  {notifications.filter(n => !n.notified).length > 0 && (
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_rgba(251,191,36,0.5)] border border-black" />
+                  <Bell size={18} className="sm:w-5 sm:h-5" />
+                  {notifications.filter(n => !n.read).length > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[14px] sm:min-w-[16px] h-3.5 sm:h-4 bg-primary text-black text-[8px] sm:text-[9px] font-black rounded-full shadow-[0_0_10px_rgba(251,191,36,0.5)] border border-black flex items-center justify-center px-1">
+                      {notifications.filter(n => !n.read).length}
+                    </span>
                   )}
                 </button>
 
@@ -142,8 +166,8 @@ export function Navbar() {
                       initial={{ opacity: 0, y: 15, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                      className="absolute right-0 top-[120%] w-[calc(100vw-32px)] sm:w-80 rounded-2xl glass shadow-2xl p-5 flex flex-col gap-4 border border-white/10 overflow-hidden"
-                      style={{ transformOrigin: "top right", zIndex: 100 }}
+                      className="fixed sm:absolute inset-x-4 sm:inset-x-auto sm:right-0 top-24 sm:top-[130%] w-auto sm:w-80 rounded-2xl bg-[#0b0b0b] backdrop-blur-md shadow-2xl p-5 flex flex-col gap-4 border border-white/10 overflow-hidden"
+                      style={{ transformOrigin: "top right", zIndex: 10002 }}
                     >
                       <div className="flex items-center justify-between pb-3 border-b border-white/5">
                         <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Recent Activity</span>
@@ -162,34 +186,68 @@ export function Navbar() {
                           notifications.map((notif) => (
                             <div 
                               key={notif.id}
-                              className="p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors flex gap-3 group/item cursor-default"
+                              onClick={() => {
+                                if (!notif.read) markNotificationAsRead(notif.id);
+                                setIsNotificationsOpen(false);
+                                router.push((notif.type === 'withdraw' || notif.type === 'withdrawal') ? '/withdraw' : '/payment');
+                              }}
+                              className={cn(
+                                "p-3 rounded-xl border transition-colors flex flex-col gap-3 group/item cursor-pointer",
+                                !notif.read ? "bg-white/10 border-white/20 hover:bg-white/15" : "bg-white/5 border-white/5 hover:bg-white/10"
+                              )}
                             >
-                              <div className={cn(
-                                "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border",
-                                notif.status === 'approved' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
-                                notif.status === 'rejected' ? "bg-red-500/10 border-red-500/20 text-red-400" :
-                                "bg-amber-500/10 border-amber-500/20 text-amber-500"
-                              )}>
-                                {notif.status === 'approved' ? <CheckCircle2 size={18} /> : 
-                                 notif.status === 'rejected' ? <XCircle size={18} /> : 
-                                 <Clock size={18} />}
-                              </div>
-                              <div className="flex flex-col gap-1 min-w-0">
-                                <div className="flex items-center justify-between gap-2">
-                                  <span className="text-[10px] font-black uppercase tracking-tighter text-white truncate">
-                                    {notif.status === 'approved' ? 'Payment Verified' : notif.status === 'rejected' ? 'Payment Declined' : 'Payment Processing'}
-                                  </span>
-                                  <span className="text-[8px] font-bold text-white/30 shrink-0">
-                                    {notif.createdAt && typeof notif.createdAt === 'object' && 'toDate' in notif.createdAt ? new Date((notif.createdAt as { toDate: () => Date }).toDate()).toLocaleDateString() : 'Just now'}
-                                  </span>
+                              <div className="flex gap-3">
+                                <div className={cn(
+                                  "w-10 h-10 rounded-lg flex items-center justify-center shrink-0 border",
+                                  notif.title.includes('Approved') ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" :
+                                  notif.title.includes('Rejected') ? "bg-red-500/10 border-red-500/20 text-red-400" :
+                                  "bg-amber-500/10 border-amber-500/20 text-amber-500"
+                                )}>
+                                  {notif.title.includes('Approved') ? <CheckCircle2 size={18} /> : 
+                                   notif.title.includes('Rejected') ? <XCircle size={18} /> : 
+                                   <Clock size={18} />}
                                 </div>
-                                <p className="text-[9px] text-white/40 leading-relaxed line-clamp-2">
-                                  {notif.status === 'approved' ? 'Your deposit of high-limit wagering is ready. Connect on WhatsApp.' : 
-                                   notif.status === 'rejected' ? 'Our team could not verify your proof. Please re-upload correct screenshot.' : 
-                                   'Awaiting manual verification by neural infrastructure.'}
-                                </p>
+                                <div className="flex flex-col gap-1 min-w-0 flex-1">
+                                  <div className="flex items-center justify-between gap-2">
+                                    <span className="text-[10px] font-black uppercase tracking-tighter text-white truncate">
+                                      {notif.title}
+                                    </span>
+                                  </div>
+                                  <p className="text-[9px] text-white/40 leading-relaxed">
+                                    {notif.message}
+                                  </p>
+                                </div>
                               </div>
+
+                              {/* Credentials Block for Payment Type */}
+                              {notif.credentials && (
+                                <div className="mt-1 p-3 rounded-lg bg-white/5 border border-white/5 space-y-2">
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <div className="flex flex-col gap-0.5">
+                                      <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">ID</span>
+                                      <span className="text-[10px] font-bold text-primary tabular-nums">{notif.credentials.id}</span>
+                                    </div>
+                                    <div className="flex flex-col gap-0.5">
+                                      <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">Pass</span>
+                                      <span className="text-[10px] font-bold text-primary tabular-nums">{notif.credentials.password}</span>
+                                    </div>
+                                  </div>
+                                  <a 
+                                    href={notif.credentials.link.startsWith('http') ? notif.credentials.link : `https://${notif.credentials.link}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (!notif.read) markNotificationAsRead(notif.id);
+                                    }}
+                                    className="w-full py-2 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-lg text-primary text-[9px] font-black uppercase tracking-widest text-center transition-all block"
+                                  >
+                                    Open Betting Panel
+                                  </a>
+                                </div>
+                              )}
                             </div>
+
                           ))
                         )}
                       </div>
@@ -208,33 +266,19 @@ export function Navbar() {
                 </AnimatePresence>
               </div>
 
-              {/* User Profile Dropdown */}
-              <div className="relative z-50 ml-1" ref={dropdownRef}>
+              {/* Profile Dropdown */}
+              <div className="relative z-10001 ml-1" ref={dropdownRef}>
                 <button 
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center gap-3 p-1.5 pr-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group cursor-pointer"
+                  className="flex items-center gap-3 p-1 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all group cursor-pointer"
                 >
                   <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-white/10 shadow-lg">
-                    {user.photoURL ? (
-                      <Image 
-                        src={user.photoURL} 
-                        alt="Profile" 
-                        fill 
-                        className="object-cover"
-                      />
-                    ) : (
-                      <Image 
-                        src={`https://ui-avatars.com/api/?name=${user.displayName || user.email || 'User'}&background=fbbf24&color=000&bold=true`}
-                        alt="Profile"
-                        fill
-                        className="object-cover"
-                      />
-                    )}
-                  </div>
-                  <div className="hidden lg:flex flex-col items-start leading-none gap-1">
-                    <span className="text-[10px] font-black text-white uppercase tracking-wider truncate max-w-[100px]">
-                      {user.displayName || user.email?.split('@')[0] || "Member"}
-                    </span>
+                    <Image 
+                      src={user?.photoURL || `https://ui-avatars.com/api/?name=${user?.displayName || user?.email || 'User'}&background=fbbf24&color=000&bold=true`}
+                      alt="Profile" 
+                      fill 
+                      className="object-cover"
+                    />
                   </div>
                 </button>
 
@@ -244,14 +288,13 @@ export function Navbar() {
                       initial={{ opacity: 0, y: 15, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute right-0 top-[120%] w-60 rounded-2xl glass border border-white/10 shadow-2xl p-2 z-100"
+                      className="absolute right-0 top-[130%] w-60 rounded-2xl glass border border-white/10 shadow-2xl p-2 z-10002"
                       style={{ transformOrigin: "top right" }}
                     >
                       <div className="px-4 py-3 border-b border-white/10 mb-2 rounded-xl bg-white/5 backdrop-blur-sm">
                         <p className="text-[9px] font-black uppercase tracking-widest text-primary mb-1">Authenticated Elite</p>
                         <p className="text-sm font-black text-white truncate">
-                          {user.displayName || user.email?.split('@')[0] || "Elite User"}
+                          {user?.displayName || user?.email?.split('@')[0] || "Elite Member"}
                         </p>
                       </div>
                       
@@ -295,7 +338,7 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Sidebar Menu */}
+      {/* Mobile Drawer */}
       <AnimatePresence>
         {isOpen && (
           <>
@@ -304,36 +347,31 @@ export function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-md z-60"
+              className="fixed inset-0 bg-black/80 backdrop-blur-md z-10003"
             />
             <motion.div 
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-0 right-0 bottom-0 w-80 bg-background border-l border-white/10 z-70 flex flex-col overflow-hidden"
+              className="fixed top-0 right-0 bottom-0 w-80 bg-background border-l border-white/10 z-10004 flex flex-col overflow-hidden"
             >
-              {/* Sidebar Header */}
               <div className="p-8 pb-4 flex items-center justify-between border-b border-white/5">
                 <div className="flex flex-col">
                   <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Navigation</span>
                   <span className="text-xs font-bold text-white/20">JSR Neural Command</span>
                 </div>
-                <button 
-                  onClick={() => setIsOpen(false)}
-                  className="p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition-all"
-                >
+                <button onClick={() => setIsOpen(false)} className="p-3 bg-white/5 rounded-xl border border-white/10">
                   <X className="w-5 h-5 text-white" />
                 </button>
               </div>
 
-              {/* User Identity - Mobile */}
               {user && (
                 <div className="px-8 py-6 border-b border-white/5 bg-white/2">
                    <div className="flex items-center gap-4">
                      <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-primary/20 bg-primary/5">
                         <Image 
-                          src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || user.email}&background=fbbf24&color=000&bold=true`}
+                          src={user?.photoURL || `https://ui-avatars.com/api/?name=${user?.displayName || user?.email}&background=fbbf24&color=000&bold=true`}
                           alt="User"
                           fill
                           className="object-cover"
@@ -341,14 +379,13 @@ export function Navbar() {
                      </div>
                      <div className="flex flex-col leading-none py-1">
                         <span className="text-sm font-black text-white uppercase tracking-tight">
-                           {user.displayName || user.email?.split('@')[0] || "Elite Member"}
+                           {user?.displayName || user?.email?.split('@')[0] || "Elite Member"}
                         </span>
                      </div>
                    </div>
                 </div>
               )}
 
-              {/* Nav Links */}
               <div className="p-8 flex flex-col gap-4 overflow-y-auto flex-1 custom-scrollbar">
                 {navLinks.map((item) => (
                   <Link 
@@ -368,22 +405,20 @@ export function Navbar() {
                 ))}
               </div>
 
-              {/* Fixed Footer Actions */}
-              <div className="p-8 bg-black/40 backdrop-blur-xl border-t border-white/5 space-y-4">
+              <div className="p-8 bg-black/40 border-t border-white/5 space-y-4">
                   <Link
                     href="/payment"
                     onClick={() => setIsOpen(false)}
-                    className="w-full block px-6 py-4 rounded-2xl bg-linear-to-r from-primary to-secondary text-black text-[11px] font-black uppercase tracking-[0.25em] text-center shadow-[0_0_20px_rgba(251,191,36,0.2)] active:scale-95 transition-all"
+                    className="w-full block px-6 py-4 rounded-2xl bg-linear-to-r from-primary to-secondary text-black text-center text-xs font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all"
                   >
-                    Submit Payment Proof
+                    Submit Proof
                   </Link>
-
                   {user && (
                     <button 
                       onClick={handleLogout}
-                      className="w-full py-4 rounded-2xl bg-white/5 border border-white/5 text-[11px] font-black uppercase tracking-[0.25em] text-red-500/60 flex items-center justify-center gap-3 active:scale-95 transition-all hover:bg-red-500/5"
+                      className="w-full py-4 rounded-2xl bg-white/5 border border-white/5 text-xs font-black uppercase tracking-widest text-red-500/60 flex items-center justify-center gap-3 active:scale-95 transition-all"
                     >
-                      <LogOut size={16} /> Logout Session
+                      <LogOut size={16} /> Logout
                     </button>
                   )}
               </div>

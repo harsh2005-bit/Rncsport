@@ -194,20 +194,21 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-12 pb-20">
+    <div className="max-w-5xl mx-auto space-y-10 pb-20 mt-20 sm:mt-32 px-4 md:px-8 overflow-hidden">
       {/* Header */}
-      <section className="text-center space-y-4">
+      <section className="text-center space-y-3 md:space-y-4 pt-10 md:pt-0">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-3xl sm:text-4xl md:text-5xl font-black text-white italic tracking-tighter font-cinzel"
+          className="text-2xl sm:text-4xl md:text-5xl font-black text-white italic tracking-tighter font-cinzel uppercase leading-tight"
         >
-          Complete Payment to Get Your Betting ID
+          Activate Your <span className="text-gradient-primary">Betting ID</span>
         </motion.h1>
-        <p className="text-white/40 text-sm sm:text-lg font-light max-w-2xl mx-auto leading-relaxed px-4">
-          Make the payment using the details below and upload your payment screenshot to receive your ID.
+        <p className="text-white/40 text-xs sm:text-lg font-light max-w-2xl mx-auto leading-relaxed px-2 md:px-4">
+          Complete your deposit and upload proof for instant account activation.
         </p>
       </section>
+
 
       {/* Payment Methods */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -331,7 +332,7 @@ export default function PaymentPage() {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="relative glass border-[#fbbf24]/20 p-8 md:p-12 rounded-[4rem] overflow-hidden space-y-8"
+        className="relative glass border-[#fbbf24]/20 p-8 md:p-12 rounded-3xl sm:rounded-[4rem] overflow-hidden space-y-8"
       >
         <div className="absolute inset-0 bg-primary/3 opacity-0 md:group-hover:opacity-100 transition-opacity pointer-events-none" />
         <div className="relative z-10 space-y-6">

@@ -1,0 +1,65 @@
+
+> frontend@0.1.0 build
+> next build
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\harsh\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\harsh\Downloads\Rncsport-main\frontend\package-lock.json
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local, .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 11.0s
+  Running TypeScript ...
+  Collecting page data using 11 workers ...
+Firebase Admin Initialized securely.
+Firebase Admin Initialized securely.
+Firebase Admin Initialized securely.
+Firebase Admin Initialized securely.
+Firebase Admin Initialized securely.
+Firebase Admin Initialized securely.
+  Generating static pages using 11 workers (0/25) ...
+  Generating static pages using 11 workers (6/25) 
+  Generating static pages using 11 workers (12/25) 
+  Generating static pages using 11 workers (18/25) 
+✓ Generating static pages using 11 workers (25/25) in 1050.5ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /admin
+├ ○ /admin/withdrawals
+├ ƒ /api/admin/payments
+├ ƒ /api/admin/payments/[id]
+├ ƒ /api/auth/sync
+├ ƒ /api/payment
+├ ƒ /api/seed-admin
+├ ƒ /api/sports
+├ ƒ /api/withdrawal
+├ ○ /best-betting-site-india
+├ ○ /casino
+├ ○ /casino/crash
+├ ○ /cricket-betting-site-india
+├ ○ /fast-withdrawal-betting-site
+├ ○ /get-id
+├ ○ /online-betting-id-india
+├ ○ /payment
+├ ○ /robots.txt
+├ ○ /sitemap.xml
+├ ○ /sports
+├ ○ /support
+├ ○ /upi-betting-site-india
+└ ○ /withdraw
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

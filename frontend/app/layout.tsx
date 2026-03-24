@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   },
 };
 
-import { Toaster } from "sonner";
+import { Toaster } from "react-hot-toast";
 
 export default function RootLayout({
   children,
@@ -111,8 +111,30 @@ export default function RootLayout({
                 </main>
                 <WhatsAppButton />
               </div>
-              <Toaster position="bottom-right" theme="dark" closeButton richColors />
+              <Toaster 
+                position="top-right" 
+                reverseOrder={false}
+                containerStyle={{
+                  top: 100,
+                  right: 20,
+                  bottom: 20,
+                  left: 20,
+                }}
+                toastOptions={{
+                  duration: 5000,
+                  style: {
+                    background: '#0b0b0b',
+                    color: '#fff',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '16px',
+                    padding: '16px',
+                    zIndex: 999999,
+                  },
+                }}
+              />
+
             </AuthProvider>
+
         </body>
       </html>
   );
