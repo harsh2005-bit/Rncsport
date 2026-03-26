@@ -63,7 +63,7 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
   const [credPass, setCredPass] = useState("");
   const [credLink, setCredLink] = useState("");
 
-  const updateStatus = async (id: string, status: string, creds?: any) => {
+  const updateStatus = async (id: string, status: string, creds?: Record<string, string | number | boolean>) => {
     if (status === "approved" && !creds) {
       setApprovingId(id);
       return;
@@ -186,6 +186,7 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
                   <th className="px-4 py-2 whitespace-nowrap">Contact</th>
                   <th className="px-4 py-2 whitespace-nowrap">Channel</th>
                   <th className="px-4 py-2 whitespace-nowrap">Transaction ID</th>
+                  <th className="px-4 py-2 whitespace-nowrap">Applied Time</th>
                   <th className="px-4 py-2 text-center whitespace-nowrap">Proof</th>
                   <th className="px-4 py-2 whitespace-nowrap">Status</th>
                   <th className="px-4 py-2 text-right whitespace-nowrap">Action</th>
@@ -212,6 +213,16 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
                       <span className="text-[11px] text-white/70 font-mono font-bold break-all leading-tight">
                         {item.transactionId || "NO ID"}
                       </span>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="flex flex-col">
+                        <span className="text-white font-bold text-[11px] font-mono">
+                          {formatTime(item.createdAt)}
+                        </span>
+                        <span className="text-white/30 text-[9px] uppercase tracking-tighter">
+                          {formatDate(item.createdAt)}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-4 py-4 text-center">
                       <div className="flex justify-center">
@@ -493,6 +504,30 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
       `}</style>
     </div>
   );
+}
+
+function formatTime(date: Date | string | number | { seconds: number } | null) {
+  if (!date) return "N/A";
+  let d: Date;
+  if (typeof date === 'object' && 'seconds' in date) {
+    d = new Date(date.seconds * 1000);
+  } else {
+    d = new Date(date as string | number | Date);
+  }
+  if (isNaN(d.getTime())) return "N/A";
+  return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+}
+
+function formatDate(date: Date | string | number | { seconds: number } | null) {
+  if (!date) return "N/A";
+  let d: Date;
+  if (typeof date === 'object' && 'seconds' in date) {
+    d = new Date(date.seconds * 1000);
+  } else {
+    d = new Date(date as string | number | Date);
+  }
+  if (isNaN(d.getTime())) return "N/A";
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
 }
 
 function statusBadge(status: string) {
