@@ -142,8 +142,8 @@ export default function PaymentPage() {
     e.preventDefault();
     setMessage(null);
 
-    if (!name.trim() || !phoneNumber.trim()) {
-      setMessage("Name and mobile number are required.");
+    if (!name.trim() || !phoneNumber.trim() || !transactionId.trim()) {
+      setMessage("Name, mobile number, and Transaction ID are required.");
       return;
     }
     if (!file) {
@@ -347,20 +347,20 @@ export default function PaymentPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">
-                  Name
+                  Name <span className="text-primary">*</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z0-9\s]/g, ""))}
                   className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm text-white outline-none focus:border-primary/40 transition-all font-bold"
                   placeholder="Enter your full name"
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">
-                  Mobile Number
+                  Mobile Number <span className="text-primary">*</span>
                 </label>
                 <div className="flex items-center bg-black/40 border border-white/10 rounded-xl overflow-hidden focus-within:border-primary/40 transition-all group">
                   <div className="bg-white/5 px-4 py-3 border-r border-white/10 text-primary font-black text-sm">
@@ -407,13 +407,14 @@ export default function PaymentPage() {
               </div>
               <div className="space-y-2">
                 <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">
-                  Transaction ID/UTR
+                  Transaction ID/UTR <span className="text-primary">*</span>
                 </label>
                 <input
                   type="text"
+                  required
                   value={transactionId}
                   onChange={(e) => setTransactionId(e.target.value)}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm text-white outline-none focus:border-primary/40 transition-all"
+                  className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm text-white outline-none focus:border-primary/40 transition-all font-bold"
                   placeholder="Enter transaction reference"
                 />
               </div>

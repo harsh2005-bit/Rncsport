@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       newNotifications.forEach(n => {
         // 1. Play Sound Notification
         try {
-          const audio = new Audio("/notify.mp3");
+          const audio = new Audio("/mixkit-software-interface-start-2574.wav");
           audio.volume = 0.5;
           audio.play().catch(e => console.warn("Auto-play blocked, interaction required", e));
         } catch (e) {

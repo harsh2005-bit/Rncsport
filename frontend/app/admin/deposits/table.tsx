@@ -26,6 +26,10 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
   const [filter, setFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
   const [isPending, startTransition] = useTransition();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
   // Switching to STABLE API FETCHING (Guaranteed to work bypasses client-side rules)
   useEffect(() => {
     const fetchData = async (isInitial = false) => {
@@ -107,6 +111,17 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
     return s === filter;
   });
 
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const paginatedItems = filteredItems.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset to first page when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter]);
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-40 gap-6">
@@ -177,7 +192,7 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
                 </tr>
               </thead>
               <tbody className="text-sm">
-                {filteredItems.map((item) => (
+                {paginatedItems.map((item) => (
                   <tr
                     key={item.id}
                     className="bg-white/3 hover:bg-white/5 border border-white/5 transition-all group"
@@ -258,6 +273,71 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
           )}
         </div>
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-4 py-2">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Showing</span>
+            <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">
+              {Math.min((currentPage - 1) * itemsPerPage + 1, filteredItems.length)}-{Math.min(currentPage * itemsPerPage, filteredItems.length)}
+            </span>
+            <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">of {filteredItems.length} Records</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="p-3 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:hover:bg-white/5 transition-all cursor-pointer group"
+            >
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            </button>
+
+            <div className="flex items-center gap-2">
+              {Array.from({ length: totalPages }, (_, i) => {
+                const pageNum = i + 1;
+                if (
+                  pageNum === 1 ||
+                  pageNum === totalPages ||
+                  (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                ) {
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={cn(
+                        "w-10 h-10 rounded-xl text-[10px] font-black transition-all border",
+                        currentPage === pageNum
+                          ? "bg-primary text-black border-primary shadow-lg shadow-primary/20 scale-110"
+                          : "bg-white/5 text-white/40 border-white/10 hover:text-white hover:bg-white/10"
+                      )}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                } else if (
+                  (pageNum === 2 && currentPage > 3) ||
+                  (pageNum === totalPages - 1 && currentPage < totalPages - 2)
+                ) {
+                  return (
+                    <span key={pageNum} className="text-white/20 font-black px-1">...</span>
+                  );
+                }
+                return null;
+              })}
+            </div>
+
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="p-3 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:hover:bg-white/5 transition-all cursor-pointer group"
+            >
+              <ArrowLeft className="w-4 h-4 rotate-180 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
+        </div>
+      )}
 
       <AnimatePresence>
         {approvingId && (
