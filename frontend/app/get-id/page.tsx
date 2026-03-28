@@ -212,7 +212,7 @@ export default function GetIdPage() {
           <div className="pt-8">
             <div className="flex justify-center">
               <Link
-                href="/payment"
+                href="/payment?mode=upload"
                 className="group relative inline-flex items-center justify-center gap-4 w-full sm:w-auto px-20 py-6 bg-linear-to-r from-[#fbbf24] to-[#f59e0b] text-black font-black text-[12px] uppercase tracking-[0.3em] rounded-2xl shadow-[0_0_30px_rgba(251,191,36,0.35)] hover:shadow-[0_0_50px_rgba(251,191,36,0.5)] hover:scale-105 active:scale-95 transition-all overflow-hidden"
               >
                 <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000 skew-x-[-25deg]" />

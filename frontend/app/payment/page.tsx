@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/auth-context";
+import { useSearchParams } from "next/navigation";
 
 
 const UPI_ID = "harshjhabksc@oksbi";
@@ -42,6 +43,9 @@ export default function PaymentPage() {
   const [dragActive, setDragActive] = useState(false);
   const [authId, setAuthId] = useState<string>("GUEST");
   const { user, openAuthModal, loading } = useAuth();
+  
+  const searchParams = useSearchParams();
+  const isUploadOnly = searchParams.get("mode") === "upload";
 
   useEffect(() => {
     if (user) {
@@ -211,121 +215,123 @@ export default function PaymentPage() {
 
 
       {/* Payment Methods */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* UPI Card */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="relative group lg:card-hover"
-        >
-          <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="relative glass border-[#fbbf24]/20 p-6 sm:p-8 rounded-4xl sm:rounded-[3rem] space-y-8 flex flex-col h-full">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-                <QrCode className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="text-xl font-black text-white italic font-cinzel uppercase tracking-tighter">
-                  UPI Payment
-                </h3>
-                <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">
-                  Instant Activation
-                </p>
-              </div>
-            </div>
-
-            <div className="flex-1 flex flex-col items-center justify-center p-6 bg-white/5 rounded-3xl border border-white/5 gap-6">
-              <div className="w-56 h-56 md:w-48 md:h-48 bg-white rounded-2xl flex items-center justify-center relative overflow-hidden group/qr shadow-2xl">
-                <Image
-                  src="/upi_qr.jpg"
-                  alt="UPI QR Code"
-                  width={200}
-                  height={200}
-                  className="object-contain group-hover/qr:scale-105 transition-transform duration-500"
-                />
-              </div>
-
-              <div className="w-full space-y-4">
-                <div className="relative group/field">
-                  <div className="absolute inset-y-0 left-4 flex items-center text-white/20">
-                    <Wallet className="w-4 h-4" />
-                  </div>
-                  <input
-                    readOnly
-                    value={UPI_ID}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl py-4 pl-12 pr-12 text-xs font-black text-white outline-none focus:border-primary/40 transition-all font-mono"
-                  />
-                  <button
-                    onClick={() => handleCopy(UPI_ID, "upi")}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-white/10 rounded-lg transition-all text-primary"
-                  >
-                    {copied === "upi" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  </button>
+      {!isUploadOnly && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* UPI Card */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="relative group lg:card-hover"
+          >
+            <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative glass border-[#fbbf24]/20 p-6 sm:p-8 rounded-4xl sm:rounded-[3rem] space-y-8 flex flex-col h-full">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                  <QrCode className="w-6 h-6 text-primary" />
                 </div>
-                <p className="text-center text-[10px] font-black text-white/30 uppercase tracking-widest">
-                  Scan the QR code or send payment to the UPI ID above.
-                </p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Bank Transfer Card */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="relative group lg:card-hover"
-        >
-          <div className="absolute inset-0 bg-secondary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="relative glass border-[#fbbf24]/20 p-6 sm:p-8 rounded-4xl sm:rounded-[3rem] space-y-8 flex flex-col h-full text-left">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
-                <Building2 className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="text-xl font-black text-white italic font-cinzel uppercase tracking-tighter">
-                  Bank Transfer
-                </h3>
-                <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">
-                  Secure NEFT / IMPS
-                </p>
-              </div>
-            </div>
-
-            <div className="flex-1 space-y-4">
-              {[
-                { label: "Account Name", value: BANK_DETAILS.name, id: "acc_name" },
-                { label: "Account Number", value: BANK_DETAILS.account, id: "acc_num" },
-                { label: "IFSC Code", value: BANK_DETAILS.ifsc, id: "ifsc" },
-                { label: "Bank Name", value: BANK_DETAILS.bank, id: "bank" },
-              ].map((field) => (
-                <div key={field.id} className="space-y-1.5">
-                  <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] px-1">
-                    {field.label}
+                <div>
+                  <h3 className="text-xl font-black text-white italic font-cinzel uppercase tracking-tighter">
+                    UPI Payment
+                  </h3>
+                  <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">
+                    Instant Activation
                   </p>
+                </div>
+              </div>
+
+              <div className="flex-1 flex flex-col items-center justify-center p-6 bg-white/5 rounded-3xl border border-white/5 gap-6">
+                <div className="w-56 h-56 md:w-48 md:h-48 bg-white rounded-2xl flex items-center justify-center relative overflow-hidden group/qr shadow-2xl">
+                  <Image
+                    src="/upi_qr.jpg"
+                    alt="UPI QR Code"
+                    width={200}
+                    height={200}
+                    className="object-contain group-hover/qr:scale-105 transition-transform duration-500"
+                  />
+                </div>
+
+                <div className="w-full space-y-4">
                   <div className="relative group/field">
+                    <div className="absolute inset-y-0 left-4 flex items-center text-white/20">
+                      <Wallet className="w-4 h-4" />
+                    </div>
                     <input
                       readOnly
-                      value={field.value}
-                      className="w-full bg-black/40 border border-white/5 rounded-xl py-3 px-4 text-xs font-bold text-white outline-none group-hover/field:border-primary/20 transition-all"
+                      value={UPI_ID}
+                      className="w-full bg-black/40 border border-white/10 rounded-xl py-4 pl-12 pr-12 text-xs font-black text-white outline-none focus:border-primary/40 transition-all font-mono"
                     />
                     <button
-                      onClick={() => handleCopy(field.value, field.id)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-white/10 rounded-lg transition-all text-white/20 hover:text-primary"
+                      onClick={() => handleCopy(UPI_ID, "upi")}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-white/10 rounded-lg transition-all text-primary"
                     >
-                      {copied === field.id ? (
-                        <Check className="w-3.5 h-3.5" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5" />
-                      )}
+                      {copied === "upi" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                     </button>
                   </div>
+                  <p className="text-center text-[10px] font-black text-white/30 uppercase tracking-widest">
+                    Scan the QR code or send payment to the UPI ID above.
+                  </p>
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
-        </motion.div>
-      </div>
+          </motion.div>
+
+          {/* Bank Transfer Card */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="relative group lg:card-hover"
+          >
+            <div className="absolute inset-0 bg-secondary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative glass border-[#fbbf24]/20 p-6 sm:p-8 rounded-4xl sm:rounded-[3rem] space-y-8 flex flex-col h-full text-left">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                  <Building2 className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-white italic font-cinzel uppercase tracking-tighter">
+                    Bank Transfer
+                  </h3>
+                  <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">
+                    Secure NEFT / IMPS
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex-1 space-y-4">
+                {[
+                  { label: "Account Name", value: BANK_DETAILS.name, id: "acc_name" },
+                  { label: "Account Number", value: BANK_DETAILS.account, id: "acc_num" },
+                  { label: "IFSC Code", value: BANK_DETAILS.ifsc, id: "ifsc" },
+                  { label: "Bank Name", value: BANK_DETAILS.bank, id: "bank" },
+                ].map((field) => (
+                  <div key={field.id} className="space-y-1.5">
+                    <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] px-1">
+                      {field.label}
+                    </p>
+                    <div className="relative group/field">
+                      <input
+                        readOnly
+                        value={field.value}
+                        className="w-full bg-black/40 border border-white/5 rounded-xl py-3 px-4 text-xs font-bold text-white outline-none group-hover/field:border-primary/20 transition-all"
+                      />
+                      <button
+                        onClick={() => handleCopy(field.value, field.id)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-white/10 rounded-lg transition-all text-white/20 hover:text-primary"
+                      >
+                        {copied === field.id ? (
+                          <Check className="w-3.5 h-3.5" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* Upload Payment Proof */}
       <motion.section
