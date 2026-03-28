@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Lock, User, Phone, ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { 
+  RecaptchaVerifier,
   signInWithPhoneNumber, 
   updateProfile,
   ConfirmationResult
@@ -60,8 +61,11 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
     setLoading(true);
     try {
-      const phoneNumber = `+91${phone}`;
-      const result = await signInWithPhoneNumber(auth, phoneNumber);
+      const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "invisible",
+      });
+      await verifier.render();
+      const result = await signInWithPhoneNumber(auth, `+91${phone}`, verifier);
       setConfirmationResult(result);
       setStep("otp");
     } catch (err: unknown) {
@@ -322,6 +326,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                 <button type="button" className="font-bold hover:underline transition-colors focus:outline-none cursor-pointer" style={{ color: COLORS.accent }}>Privacy</button>.
               </p>
             </div>
+            <div id="recaptcha-container"></div>
           </motion.div>
         </div>
       )}
