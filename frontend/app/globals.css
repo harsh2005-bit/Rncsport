@@ -158,3 +158,8 @@ button, a {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
 }
+
+/* Hide Google reCAPTCHA badge */
+.grecaptcha-badge { 
+  visibility: hidden !important; 
+}
