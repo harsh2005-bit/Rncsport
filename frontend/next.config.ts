@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "**.googleusercontent.com", // For Google avatars
+      },
+      {
+        protocol: "https",
+        hostname: "ui-avatars.com",
       }
     ],
   },

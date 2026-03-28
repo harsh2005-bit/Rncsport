@@ -10,21 +10,32 @@ const firebaseConfig = {
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Task 1 & 2: Ensure single initialization
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
+
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// CRITICAL: Explicitly using the database ID that works with your project console.
-// If the error was 'Database (default) not found', use 'default' or initialize explicitly.
-const db = getFirestore(app, "default"); 
+if (typeof window !== "undefined") {
+  if (process.env.NODE_ENV === "development") {
+    // @ts-ignore
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+  }
+  
+  initializeAppCheck(app, {
+    provider: new ReCaptchaEnterpriseProvider("6LcpiZssAAAAAGAmlWpk1jUbEHdKGwf-WWZYWDib"),
+    isTokenAutoRefreshEnabled: true,
+  });
+}
 
+const db = getFirestore(app, "default");
 const auth = getAuth(app);
 const storage = getStorage(app);
-
-// Analytics - only in browser
-const analytics = typeof window !== "undefined" ? isSupported().then(supported => supported ? getAnalytics(app) : null) : null;
+const analytics = typeof window !== "undefined" 
+  ? isSupported().then(supported => supported ? getAnalytics(app) : null) 
+  : null;
 
 export { app, auth, db, storage, analytics };

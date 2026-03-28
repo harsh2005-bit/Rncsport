@@ -2,23 +2,20 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Lock, Mail, User, Chrome, ArrowRight, Loader2 } from "lucide-react";
+import { X, Lock, User, Phone, ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  updateProfile
+  signInWithPhoneNumber, 
+  updateProfile,
+  ConfirmationResult
 } from "firebase/auth";
-import { FirebaseError } from "firebase/app";
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-type AuthMode = "signIn" | "signUp";
+type AuthStep = "details" | "otp";
 
 const COLORS = {
   accent: "#fbbf24", // Premium Gold
@@ -35,72 +32,71 @@ const COLORS = {
 };
 
 export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
-  const [mode, setMode] = useState<AuthMode>("signUp");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [step, setStep] = useState<AuthStep>("details");
   const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (!isOpen) {
-      setMode("signUp");
-      setEmail("");
-      setPassword("");
+      setStep("details");
       setFullName("");
+      setPhone("");
+      setOtp("");
       setError("");
+      setConfirmationResult(null);
     }
   }, [isOpen]);
 
-  const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendOtp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setError("");
-    setLoading(true);
+    
+    if (!fullName.trim()) return setError("Please enter your name");
+    if (phone.length !== 10) return setError("Enter a valid 10-digit mobile number");
 
+    setLoading(true);
     try {
-      if (mode === "signUp") {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        if (fullName) {
-          await updateProfile(userCredential.user, { displayName: fullName });
-        }
-      } else {
-        await signInWithEmailAndPassword(auth, email, password);
-      }
-      onClose();
-    } catch (err) {
-      const error = err as FirebaseError;
-      
-      if (error.code === 'auth/email-already-in-use') {
-        setError("This email is already registered.");
-      } else if (error.code === 'auth/invalid-credential') {
-        setError("Invalid email or password.");
-      } else if (error.code === 'auth/weak-password') {
-        setError("Password should be at least 6 characters.");
-      } else {
-        setError("Authentication failed. Please try again.");
-      }
+      const phoneNumber = `+91${phone}`;
+      const result = await signInWithPhoneNumber(auth, phoneNumber);
+      setConfirmationResult(result);
+      setStep("otp");
+    } catch (err: unknown) {
+      console.error("OTP Send Error:", err);
+      const message = err instanceof Error ? err.message : "Failed to send OTP. Please try again.";
+      setError(message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSocialSignIn = async () => {
+  const handleVerifyOtp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setError("");
+    
+    if (otp.length !== 6) return setError("Enter the 6-digit OTP");
+    if (!confirmationResult) return setError("Session expired. Please try again.");
+
     setLoading(true);
     try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const userCredential = await confirmationResult.confirm(otp);
+      if (fullName.trim()) {
+        await updateProfile(userCredential.user, { displayName: fullName.trim() });
+      }
       onClose();
-    } catch (err) {
-      console.error("Social Auth Error:", err);
-      setError(`Failed to sign in with Google.`);
+    } catch (err: unknown) {
+      console.error("OTP Verify Error:", err);
+      setError("Invalid OTP or session expired. Try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center p-4 sm:p-0" style={{ zIndex: 99999 }}>
           {/* Deep Dark Blur Overlay */}
@@ -121,6 +117,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
           </motion.div>
           
           <motion.div
+            key={step}
             initial={{ scale: 0.95, opacity: 0, y: 15 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: 15 }}
@@ -142,18 +139,6 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               <X size={18} />
             </button>
 
-            {/* Autofill overriding CSS block */}
-            <style jsx>{`
-              input:-webkit-autofill,
-              input:-webkit-autofill:hover, 
-              input:-webkit-autofill:focus, 
-              input:-webkit-autofill:active {
-                -webkit-box-shadow: 0 0 0 50px ${COLORS.bgInput} inset !important;
-                -webkit-text-fill-color: ${COLORS.textPrimary} !important;
-                transition: background-color 5000s ease-in-out 0s;
-              }
-            `}</style>
-
             {/* Glowing Top Icon */}
             <div className="flex justify-center mb-6">
               <div 
@@ -165,51 +150,28 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                 }}
               >
                 <div className="absolute inset-0 rounded-2xl blur-md" style={{ backgroundColor: COLORS.accentGlow }}></div>
-                <Lock size={28} strokeWidth={2} className="relative z-10" />
+                {step === "details" ? (
+                  <Lock size={28} strokeWidth={2} className="relative z-10" />
+                ) : (
+                  <CheckCircle2 size={28} strokeWidth={2} className="relative z-10" />
+                )}
               </div>
             </div>
 
             {/* Header */}
             <div className="text-center space-y-2 mb-8">
               <h2 className="text-2xl font-black tracking-wide uppercase" style={{ color: COLORS.textPrimary }}>
-                {mode === "signUp" ? "Join The Elite" : "Welcome Back"}
+                {step === "details" ? "Join The Elite" : "Verify ID"}
               </h2>
               <p className="text-sm font-medium" style={{ color: COLORS.accent }}>
-                {mode === "signUp" 
+                {step === "details" 
                   ? "Unlock premium access to JSR SPORTS." 
-                  : "Sign in to continue your journey."}
+                  : `Enter the code sent to +91 ${phone}`}
               </p>
             </div>
 
-            {/* Tabs */}
-            <div className="flex mb-8 relative border-b" style={{ borderColor: COLORS.borderLight }}>
-              <button
-                type="button"
-                onClick={() => setMode("signIn")}
-                className="flex-1 pb-4 text-xs font-bold uppercase tracking-wider transition-colors relative focus:outline-none"
-                style={{ color: mode === "signIn" ? COLORS.accent : COLORS.textSecondary }}
-              >
-                Sign In
-                {mode === "signIn" && (
-                  <motion.div layoutId="auth-tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 rounded-t-full" style={{ backgroundColor: COLORS.accent }} />
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("signUp")}
-                className="flex-1 pb-4 text-xs font-bold uppercase tracking-wider transition-colors relative focus:outline-none"
-                style={{ color: mode === "signUp" ? COLORS.accent : COLORS.textSecondary }}
-              >
-                Sign Up
-                {mode === "signUp" && (
-                  <motion.div layoutId="auth-tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 rounded-t-full" style={{ backgroundColor: COLORS.accent }} />
-                )}
-              </button>
-            </div>
-
-            {/* Form */}
-            <form onSubmit={handleAuth} className="space-y-4">
-              {mode === "signUp" && (
+            {step === "details" ? (
+              <form onSubmit={handleSendOtp} className="space-y-4">
                 <div className="space-y-1.5">
                   <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: COLORS.textSecondary }}>Full Name</label>
                   <div className="relative group">
@@ -230,117 +192,128 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                       onBlur={(e) => e.target.style.borderColor = COLORS.borderLight}
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      required={mode === "signUp"}
+                      required
                     />
                   </div>
                 </div>
-              )}
 
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: COLORS.textSecondary }}>Email Address</label>
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors" style={{ color: COLORS.textSecondary }}>
-                    <Mail size={16} />
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: COLORS.textSecondary }}>Mobile Number</label>
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors flex items-center gap-1 font-bold text-xs" style={{ color: COLORS.textSecondary }}>
+                      <Phone size={14} />
+                      <span>+91</span>
+                    </div>
+                    <input
+                      type="tel"
+                      placeholder="Enter mobile number"
+                      maxLength={10}
+                      className="w-full rounded-xl py-3.5 pr-4 transition-all focus:outline-none border text-sm font-medium"
+                      style={{ 
+                        backgroundColor: COLORS.bgInput, 
+                        borderColor: COLORS.borderLight,
+                        color: COLORS.textPrimary,
+                        paddingLeft: "72px"
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = COLORS.accent}
+                      onBlur={(e) => e.target.style.borderColor = COLORS.borderLight}
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                      required
+                    />
                   </div>
-                  <input
-                    type="email"
-                    placeholder="name@example.com"
-                    className="w-full rounded-xl py-3.5 pl-11 pr-4 transition-all focus:outline-none border text-sm font-medium"
-                    style={{ 
-                      backgroundColor: COLORS.bgInput, 
-                      borderColor: COLORS.borderLight,
-                      color: COLORS.textPrimary,
-                      paddingLeft: "44px"
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = COLORS.accent}
-                    onBlur={(e) => e.target.style.borderColor = COLORS.borderLight}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
                 </div>
-              </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: COLORS.textSecondary }}>Password</label>
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors" style={{ color: COLORS.textSecondary }}>
-                    <Lock size={16} />
+                {error && (
+                  <div 
+                    className="text-[11px] font-bold text-center p-3 rounded-xl border flex items-center justify-center gap-2" 
+                    style={{ color: COLORS.errorText, backgroundColor: COLORS.errorBg, borderColor: "rgba(239, 68, 68, 0.2)" }}
+                  >
+                    {error}
                   </div>
-                  <input
-                    type="password"
-                    placeholder="••••••••"
-                    className="w-full rounded-xl py-3.5 pl-11 pr-4 transition-all focus:outline-none border text-sm font-medium"
-                    style={{ 
-                      backgroundColor: COLORS.bgInput, 
-                      borderColor: COLORS.borderLight,
-                      color: COLORS.textPrimary,
-                      paddingLeft: "44px"
-                    }}
-                    onFocus={(e) => e.target.style.borderColor = COLORS.accent}
-                    onBlur={(e) => e.target.style.borderColor = COLORS.borderLight}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              {error && (
-                <div 
-                  className="text-[11px] font-bold text-center p-3 rounded-xl border flex items-center justify-center gap-2" 
-                  style={{ color: COLORS.errorText, backgroundColor: COLORS.errorBg, borderColor: "rgba(239, 68, 68, 0.2)" }}
-                >
-                  {error}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 group mt-4 text-black uppercase tracking-wider text-xs shadow-xl active:scale-[0.98] cursor-pointer"
-                style={{ 
-                  backgroundColor: COLORS.accent, 
-                }}
-              >
-                {loading ? (
-                  <Loader2 className="animate-spin" size={18} />
-                ) : (
-                  <>
-                    <span className="mt-[2px]">{mode === "signUp" ? "Create Account" : "Secure Sign In"}</span>
-                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                  </>
                 )}
-              </button>
-            </form>
 
-            <div className="relative my-7">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t" style={{ borderColor: COLORS.borderLight }}></div>
-              </div>
-              <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
-                <span className="px-4" style={{ backgroundColor: COLORS.bgPanel, color: COLORS.textSecondary }}>Or Continue With</span>
-              </div>
-            </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 group mt-4 text-black uppercase tracking-wider text-xs shadow-xl active:scale-[0.98] cursor-pointer"
+                  style={{ 
+                    backgroundColor: COLORS.accent, 
+                  }}
+                >
+                  {loading ? (
+                    <Loader2 className="animate-spin" size={18} />
+                  ) : (
+                    <>
+                      <span className="mt-[2px]">Send OTP</span>
+                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOtp} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold uppercase tracking-wider ml-1" style={{ color: COLORS.textSecondary }}>6-Digit OTP</label>
+                  <div className="relative group text-center">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="••••••"
+                      maxLength={6}
+                      className="w-full rounded-xl py-4 text-center tracking-[1em] transition-all focus:outline-none border text-lg font-black"
+                      style={{ 
+                        backgroundColor: COLORS.bgInput, 
+                        borderColor: COLORS.borderLight,
+                        color: COLORS.accent,
+                      }}
+                      onFocus={(e) => e.target.style.borderColor = COLORS.accent}
+                      onBlur={(e) => e.target.style.borderColor = COLORS.borderLight}
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      required
+                      autoFocus
+                    />
+                  </div>
+                </div>
 
-            <div className="grid grid-cols-1">
-              <button 
-                type="button"
-                onClick={() => handleSocialSignIn()}
-                disabled={loading}
-                className="flex items-center justify-center gap-3 py-3.5 px-4 rounded-xl font-bold transition-all active:scale-[0.98] border text-sm cursor-pointer"
-                style={{ 
-                  backgroundColor: COLORS.bgInput, 
-                  borderColor: COLORS.borderLight, 
-                  color: COLORS.textPrimary 
-                }}
-                onMouseOver={(e) => e.currentTarget.style.borderColor = COLORS.textSecondary}
-                onMouseOut={(e) => e.currentTarget.style.borderColor = COLORS.borderLight}
-              >
-                <Chrome size={18} style={{ color: COLORS.textPrimary }} />
-                <span className="mt-[2px]">Google</span>
-              </button>
-            </div>
+                {error && (
+                  <div 
+                    className="text-[11px] font-bold text-center p-3 rounded-xl border flex items-center justify-center gap-2" 
+                    style={{ color: COLORS.errorText, backgroundColor: COLORS.errorBg, borderColor: "rgba(239, 68, 68, 0.2)" }}
+                  >
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 group mt-4 text-black uppercase tracking-wider text-xs shadow-xl active:scale-[0.98] cursor-pointer"
+                  style={{ 
+                    backgroundColor: COLORS.accent, 
+                  }}
+                >
+                  {loading ? (
+                    <Loader2 className="animate-spin" size={18} />
+                  ) : (
+                    <>
+                      <span className="mt-[2px]">Verify & Join</span>
+                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setStep("details")}
+                  className="w-full text-[10px] font-bold uppercase tracking-widest pt-2 hover:opacity-80 transition-opacity"
+                  style={{ color: COLORS.textSecondary }}
+                >
+                  ← Edit Phone Number
+                </button>
+              </form>
+            )}
 
             <div className="mt-8 text-center pt-2">
               <p className="text-[10px] leading-relaxed px-2 uppercase tracking-wide font-medium" style={{ color: COLORS.textSecondary }}>

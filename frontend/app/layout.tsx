@@ -58,6 +58,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
+        <script src="https://www.google.com/recaptcha/enterprise.js?render=6LcpiZssAAAAAGAmlWpk1jUbEHdKGwf-WWZYWDib" async defer></script>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
