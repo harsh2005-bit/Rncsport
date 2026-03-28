@@ -63,12 +63,14 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     try {
       // ✅ Clear old verifier first
       const container = document.getElementById("recaptcha-container");
-      if (container) container.innerHTML = "";
-
+      if (container) {
+        container.innerHTML = "";
+      }
+      
       const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
         size: "invisible",
       });
-      await verifier.render();
+
       const result = await signInWithPhoneNumber(auth, `+91${phone}`, verifier);
       setConfirmationResult(result);
       setStep("otp");
