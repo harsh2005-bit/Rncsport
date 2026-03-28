@@ -37,7 +37,6 @@ export default function PaymentPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("UPI");
   const [platform, setPlatform] = useState("All Panel Exch");
-  const [transactionId, setTransactionId] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -50,7 +49,9 @@ export default function PaymentPage() {
   useEffect(() => {
     if (user) {
       setAuthId(user.uid);
-      if (user.phoneNumber) setPhoneNumber(user.phoneNumber);
+      const rawPhone = user.phoneNumber || "";
+      const displayPhone = rawPhone.replace("+91", "").trim();
+      setPhoneNumber(displayPhone);
       if (user.displayName) setName(user.displayName);
     } else {
       setAuthId("GUEST");
@@ -146,8 +147,8 @@ export default function PaymentPage() {
     e.preventDefault();
     setMessage(null);
 
-    if (!name.trim() || !phoneNumber.trim() || !transactionId.trim()) {
-      setMessage("Name, mobile number, and Transaction ID are required.");
+    if (!name.trim() || !phoneNumber.trim()) {
+      setMessage("Account verification details are missing.");
       return;
     }
     if (!file) {
@@ -165,7 +166,7 @@ export default function PaymentPage() {
       formData.append("phoneNumber", phoneNumber.trim());
       formData.append("paymentMethod", paymentMethod);
       formData.append("platform", platform);
-      formData.append("transactionId", transactionId.trim() || "");
+      formData.append("transactionId", "SYSTEM_" + Date.now());
 
       // 2. Fetch Firebase ID Token for secure backend verification
       const token = await user.getIdToken();
@@ -184,8 +185,7 @@ export default function PaymentPage() {
         throw new Error(errorData.message || "Failed to store in database");
       }
 
-      setMessage("Payment proof submitted successfully. Our team will verify shortly.");
-      setTransactionId("");
+      setMessage("Payment proof submitted successfully. Please Check notification for Id in 2 mins");
       setFile(null);
       setPreviewUrl(null);
     } catch (err: unknown) {
@@ -353,30 +353,28 @@ export default function PaymentPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">
-                  Name <span className="text-primary">*</span>
+                  Account Name
                 </label>
                 <input
                   type="text"
-                  required
+                  readOnly
                   value={name}
-                  onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z0-9\s]/g, ""))}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm text-white outline-none focus:border-primary/40 transition-all font-bold"
-                  placeholder="Enter your full name"
+                  className="w-full bg-black/60 border border-white/5 rounded-xl py-3 px-4 text-sm text-white/50 outline-none cursor-not-allowed font-bold"
+                  placeholder="Loading name..."
                 />
               </div>
               <div className="space-y-2">
                 <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">
-                  Mobile Number <span className="text-primary">*</span>
+                  Registered Mobile
                 </label>
-                <div className="flex items-center bg-black/40 border border-white/10 rounded-xl overflow-hidden focus-within:border-primary/40 transition-all group">
+                <div className="flex items-center bg-black/60 border border-white/5 rounded-xl overflow-hidden cursor-not-allowed opacity-50">
                   <div className="bg-white/5 px-4 py-3 border-r border-white/10 text-primary font-black text-sm">
                     +91
                   </div>
                   <input
                     type="tel"
-                    required
+                    readOnly
                     value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
                     className="flex-1 bg-transparent py-3 px-4 text-sm text-white outline-none font-bold"
                     placeholder="70000 00000"
                   />
@@ -384,45 +382,57 @@ export default function PaymentPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
                 <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">
                   Payment Method
                 </label>
-                <select
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm text-white outline-none focus:border-primary/40 transition-all font-bold"
-                >
-                  <option value="UPI">UPI</option>
-                  <option value="BANK_TRANSFER">Bank Transfer</option>
-                </select>
+                <div className="flex gap-4">
+                  {[
+                    { id: "UPI", label: "UPI/Scan" },
+                    { id: "BANK_TRANSFER", label: "Bank Transfer" }
+                  ].map((method) => (
+                    <button
+                      key={method.id}
+                      type="button"
+                      onClick={() => setPaymentMethod(method.id as PaymentMethod)}
+                      className={cn(
+                        "flex-1 py-3 px-4 rounded-xl border text-xs font-black uppercase tracking-wider transition-all",
+                        paymentMethod === method.id 
+                          ? "bg-primary/20 border-primary text-primary" 
+                          : "bg-black/40 border-white/10 text-white/40 hover:border-white/20"
+                      )}
+                    >
+                      {method.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="space-y-2">
+
+              <div className="space-y-4">
                 <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">
-                  Platform Selection
+                  Select Platform
                 </label>
-                <select
-                  value={platform}
-                  onChange={(e) => setPlatform(e.target.value)}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm text-white outline-none focus:border-primary/40 transition-all font-bold"
-                >
-                  <option value="All Panel Exch">All Panel Exch</option>
-                  <option value="Go Exch 777">Go Exch 777</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">
-                  Transaction ID/UTR <span className="text-primary">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={transactionId}
-                  onChange={(e) => setTransactionId(e.target.value)}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm text-white outline-none focus:border-primary/40 transition-all font-bold"
-                  placeholder="Enter transaction reference"
-                />
+                <div className="flex gap-4">
+                  {[
+                    { id: "All Panel Exch", label: "All Panel" },
+                    { id: "Go Exch 777", label: "Go Exch 777" }
+                  ].map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => setPlatform(p.id)}
+                      className={cn(
+                        "flex-1 py-3 px-4 rounded-xl border text-xs font-black uppercase tracking-wider transition-all",
+                        platform === p.id 
+                          ? "bg-primary/20 border-primary text-primary" 
+                          : "bg-black/40 border-white/10 text-white/40 hover:border-white/20"
+                      )}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 

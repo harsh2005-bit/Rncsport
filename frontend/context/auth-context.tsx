@@ -23,6 +23,7 @@ export interface AppNotification {
   title: string;
   message: string;
   type: string;
+  status?: string;
   read: boolean;
   createdAt: { seconds: number; nanoseconds: number } | Date | null;
   credentials?: {
