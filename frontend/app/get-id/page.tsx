@@ -6,7 +6,6 @@ import {
   Check, 
   QrCode, 
   Building2, 
-  MessageSquare, 
   Wallet,
   ArrowLeft,
   Zap
@@ -24,10 +23,6 @@ const BANK_DETAILS = {
   ifsc: "HDFC0001234",
   bank: "HDFC BANK"
 };
-
-const WHATSAPP_NUMBER = "447735378047";
-const WHATSAPP_PROOF_MSG = encodeURIComponent("Hello JSR SPORTS, I have completed the payment for my betting ID. Here is my payment proof.");
-const WHATSAPP_PROOF_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_PROOF_MSG}`;
 
 export default function GetIdPage() {
   const [copiedField, setCopiedField] = useState<string | null>(null);
@@ -208,29 +203,21 @@ export default function GetIdPage() {
             <span className="text-[10px] font-black uppercase tracking-[0.4em]">Final Protocol Step</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-white italic tracking-tighter uppercase font-cinzel leading-none">
-            Send <span className="text-gradient-primary">Payment Proof</span>
+            Upload <span className="text-gradient-primary">Payment Proof</span>
           </h2>
           <p className="text-white/40 text-base font-light max-w-xl mx-auto leading-relaxed">
-            After completing payment, click the button below and send your payment screenshot on WhatsApp. Our team will verify the payment and provide your betting ID.
+            After completing payment, click the button below and upload your payment screenshot. Our team will verify the payment and provide your betting ID.
           </p>
           
           <div className="pt-8">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                href={WHATSAPP_PROOF_LINK}
-                target="_blank"
-                className="group relative inline-flex items-center justify-center gap-4 w-full sm:w-auto px-12 py-6 bg-linear-to-r from-[#fbbf24] to-[#f59e0b] text-black font-black text-[12px] uppercase tracking-[0.3em] rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(251,191,36,0.35)] hover:shadow-[0_0_50px_rgba(251,191,36,0.5)] overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000 skew-x-[-25deg]" />
-                <MessageSquare className="w-5 h-5 fill-current" />
-                Send Payment Proof on WhatsApp
-              </Link>
-
+            <div className="flex justify-center">
               <Link
                 href="/payment"
-                className="group relative inline-flex items-center justify-center gap-4 w-full sm:w-auto px-12 py-6 bg-white/5 border border-white/10 text-white font-black text-[12px] uppercase tracking-[0.3em] rounded-2xl hover:bg-white/10 hover:scale-105 active:scale-95 transition-all overflow-hidden"
+                className="group relative inline-flex items-center justify-center gap-4 w-full sm:w-auto px-20 py-6 bg-linear-to-r from-[#fbbf24] to-[#f59e0b] text-black font-black text-[12px] uppercase tracking-[0.3em] rounded-2xl shadow-[0_0_30px_rgba(251,191,36,0.35)] hover:shadow-[0_0_50px_rgba(251,191,36,0.5)] hover:scale-105 active:scale-95 transition-all overflow-hidden"
               >
-                Upload on Website
+                <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-[200%] transition-transform duration-1000 skew-x-[-25deg]" />
+                <Wallet className="w-5 h-5" />
+                Upload Payment Proof
               </Link>
             </div>
           </div>
