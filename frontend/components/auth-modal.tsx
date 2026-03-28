@@ -61,6 +61,10 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
     setLoading(true);
     try {
+      // ✅ Clear old verifier first
+      const container = document.getElementById("recaptcha-container");
+      if (container) container.innerHTML = "";
+
       const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
         size: "invisible",
       });
