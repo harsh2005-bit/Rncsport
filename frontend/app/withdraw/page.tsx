@@ -310,7 +310,7 @@ export default function WithdrawalPage() {
             <div className="pt-4 border-t border-white/5">
               <div className="space-y-2">
                <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">
-                  Authorized Betting ID {bettingId && "(Sticky)"}
+                  Authorized Betting ID
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-4 flex items-center text-white/20">

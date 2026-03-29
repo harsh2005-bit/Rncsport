@@ -41,6 +41,8 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const verifierRef = useRef<RecaptchaVerifier | null>(null);
+
   useEffect(() => {
     if (!isOpen) {
       setStep("details");
@@ -49,6 +51,32 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       setOtp("");
       setError("");
       setConfirmationResult(null);
+      
+      // Cleanup verifier
+      if (verifierRef.current) {
+        verifierRef.current.clear();
+        verifierRef.current = null;
+      }
+    } else {
+      // Pre-initialize verifier when modal opens
+      const initVerifier = async () => {
+        try {
+          const container = document.getElementById("recaptcha-container");
+          if (container && !verifierRef.current) {
+            container.innerHTML = "";
+            const v = new RecaptchaVerifier(auth, "recaptcha-container", {
+              size: "invisible",
+            });
+            verifierRef.current = v;
+            // Pre-render to speed up subsequent call
+            await v.render();
+          }
+        } catch (err) {
+          console.error("Recaptcha Init Error:", err);
+        }
+      };
+      // Short delay to ensure DOM is ready if needed
+      setTimeout(initVerifier, 100);
     }
   }, [isOpen]);
 
@@ -61,15 +89,17 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
     setLoading(true);
     try {
-      // ✅ Clear old verifier first
-      const container = document.getElementById("recaptcha-container");
-      if (container) {
-        container.innerHTML = "";
-      }
+      let verifier = verifierRef.current;
       
-      const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible",
-      });
+      if (!verifier) {
+        const container = document.getElementById("recaptcha-container");
+        if (container) container.innerHTML = "";
+        
+        verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+          size: "invisible",
+        });
+        verifierRef.current = verifier;
+      }
 
       const result = await signInWithPhoneNumber(auth, `+91${phone}`, verifier);
       setConfirmationResult(result);
@@ -78,6 +108,11 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       console.error("OTP Send Error:", err);
       const message = err instanceof Error ? err.message : "Failed to send OTP. Please try again.";
       setError(message);
+      // Reset verifier on error to allow retry
+      if (verifierRef.current) {
+        verifierRef.current.clear();
+        verifierRef.current = null;
+      }
     } finally {
       setLoading(false);
     }
@@ -332,8 +367,9 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                 <button type="button" className="font-bold hover:underline transition-colors focus:outline-none cursor-pointer" style={{ color: COLORS.accent }}>Privacy</button>.
               </p>
             </div>
-            <div id="recaptcha-container"></div>
           </motion.div>
+          {/* Recaptcha container placed outside motion.div to stay stable across step transitions */}
+          <div id="recaptcha-container"></div>
         </div>
       )}
     </AnimatePresence>
