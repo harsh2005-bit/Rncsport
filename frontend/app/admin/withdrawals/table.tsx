@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { MessageCircle, X, Clock, Loader2, ArrowLeft, XCircle, Lock } from "lucide-react";
@@ -42,6 +42,10 @@ export default function AdminWithdrawalsTable({ adminKey }: { adminKey: string }
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+  
+  // Track known IDs to trigger sound on new alerts
+  const knownIdsRef = useRef<Set<string>>(new Set());
+  const initialLoadDone = useRef(false);
 
   const fetchWithdrawals = async (isInitial = false) => {
     try {
@@ -49,8 +53,29 @@ export default function AdminWithdrawalsTable({ adminKey }: { adminKey: string }
         headers: { 'x-admin-key': adminKey }
       });
       if (response.ok) {
-        const data = await response.json();
+        const data: WithdrawalRequest[] = await response.json();
         setWithdrawals(data);
+        
+        if (!initialLoadDone.current) {
+          knownIdsRef.current = new Set<string>(data.map(d => d.id));
+          initialLoadDone.current = true;
+        } else {
+          const currentIds = new Set<string>(data.map(d => d.id));
+          const hasNewPending = data.some(item => 
+             !knownIdsRef.current.has(item.id) && item.status?.toLowerCase() === 'pending'
+          );
+          
+          if (hasNewPending) {
+            try {
+              const audio = new Audio("/mixkit-software-interface-start-2574.wav");
+              audio.volume = 0.5;
+              audio.play().catch(e => console.warn("Admin Auto-play blocked", e));
+            } catch (e) {
+              console.error("Audio playback error", e);
+            }
+          }
+          knownIdsRef.current = currentIds;
+        }
       }
     } catch (error) {
       console.error("API Fetch Error:", error);
