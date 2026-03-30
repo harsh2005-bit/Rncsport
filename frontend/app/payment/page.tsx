@@ -428,20 +428,26 @@ function PaymentContent() {
                 <div className="flex gap-4">
                   {[
                     { id: "All Panel Exch", label: "All Panel" },
-                    { id: "Go Exch 777", label: "Go Exch 777" }
+                    { id: "Go Exch 777", label: "Go Exch 777" },
+                    { id: "11xSports", label: "11xSports", badge: "Auto Site" }
                   ].map((p) => (
                     <button
                       key={p.id}
                       type="button"
                       onClick={() => setPlatform(p.id)}
                       className={cn(
-                        "flex-1 py-3 px-4 rounded-xl border text-xs font-black uppercase tracking-wider transition-all",
+                        "relative flex-1 py-3 px-4 rounded-xl border text-xs font-black uppercase tracking-wider transition-all",
                         platform === p.id 
                           ? "bg-primary/20 border-primary text-primary" 
                           : "bg-black/40 border-white/10 text-white/40 hover:border-white/20"
                       )}
                     >
                       {p.label}
+                      {p.badge && (
+                        <span className="absolute -top-2 -right-2 bg-red-600 outline outline-background text-white text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full animate-pulse shadow-lg">
+                          {p.badge}
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>

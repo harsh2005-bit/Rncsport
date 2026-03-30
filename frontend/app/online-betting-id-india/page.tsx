@@ -23,7 +23,7 @@ export default function OnlineBettingId() {
         {
           heading: "Attain Your Verified Online Betting ID",
           paragraphs: [
-            "We serve as the absolute bridge for placing live wagers. Our 24/7 service infrastructure lets you secure an online betting ID in India tailored explicitly for major platforms like All Panel and Go Exchange.",
+            "We serve as the absolute bridge for placing live wagers. Our 24/7 service infrastructure lets you secure an online betting ID in India tailored explicitly for major platforms like All Panel, Go Exchange, and 11xSports.",
             "Each betting ID offers encrypted login, complete fund segregation, and unfiltered live market streams directly onto your device."
           ]
         },

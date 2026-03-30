@@ -24,7 +24,7 @@ export default function BestBettingSite() {
           heading: "Why We Are the Best Betting Site in India",
           paragraphs: [
             "With thousands of matches and events happening daily, finding a reliable and secure platform is essential. Here at JSR Sports, we deliver the definitive betting experience with premium features specifically tailored for the Indian audience.",
-            "Our platform is renowned for offering exclusive access to leading exchanges like All Panel and Go Exch. We completely bypass the cumbersome verification layers of traditional sites to get you playing instantly."
+            "Our platform is renowned for offering exclusive access to leading exchanges like All Panel, Go Exch, and 11xSports. We completely bypass the cumbersome verification layers of traditional sites to get you playing instantly."
           ]
         },
         {

@@ -27,7 +27,7 @@ import { GoPanelCard } from "@/components/go-panel-card";
 
 // Constants & Data
 const WHATSAPP_URL = "https://wa.me/447735378047";
-const WHATSAPP_MSG = encodeURIComponent("Hello JSR SPORTS, I want to get a betting ID for All Panel / Go Exchange.");
+const WHATSAPP_MSG = encodeURIComponent("Hello JSR SPORTS, I want to get a betting ID for All Panel / Go Exchange / 11xSports.");
 const WHATSAPP_LINK = `${WHATSAPP_URL}?text=${WHATSAPP_MSG}`;
 
 interface Match {
@@ -45,7 +45,7 @@ interface Match {
 
 const STEPS = [
   { id: 1, title: "Click Get ID", desc: "Tap any button to connect with our WhatsApp experts.", icon: Send },
-  { id: 2, title: "Message Us", desc: "Request your preferred exchange ID (All Panel, Go Exch, etc).", icon: MessageSquare },
+  { id: 2, title: "Message Us", desc: "Request your preferred exchange ID (All Panel, Go Exch, 11xSports, etc).", icon: MessageSquare },
   { id: 3, title: "Receive Credentials", desc: "Get your official login ID and secure password instantly.", icon: Lock },
   { id: 4, title: "Start Playing", desc: "Log in to the exchange platform and explore live betting.", icon: Trophy },
 ];
@@ -62,6 +62,7 @@ const CASINO_GAMES = [
 const EXCHANGES = [
   { name: "All Panel Exchange", logo: "/cricket_tile_premium.png", desc: "India's largest and most trusted betting exchange.", link: "https://allpanelexch9.co/" },
   { name: "Go Exchange", logo: "/crash_tile_premium.png", desc: "Premium platform for cricket and multiple sports events.", link: "https://goexch777.com/" },
+  { name: "11xSports", logo: "/tennis_tile_premium.png", desc: "Next-generation betting with seamless experience.", link: "https://11xsport.com/login", badge: "Automatic Site" },
 ];
 
 const VIP_LEVELS = [
@@ -116,7 +117,7 @@ export default function Home() {
     "Aman from Delhi deposited ₹5,000",
     "Rahul won ₹12,000 on cricket",
     "Vikas received new betting ID",
-    "User_8821 started playing on All Panel",
+    "User_8821 started playing on 11xSports",
     "Karan won ₹45,000 on Dragon Tiger",
     "Priya received Platinum VIP Access",
   ]);
@@ -211,7 +212,7 @@ export default function Home() {
         
         const newTicker = Math.random() > 0.5 
           ? `${name} from ${city} won ₹${amt.toLocaleString()} on ${game}`
-          : `${name} just received a new ${Math.random() > 0.5 ? 'All Panel' : 'Go Exch'} ID`;
+          : `${name} just received a new ${['All Panel', 'Go Exch', '11xSports'][Math.floor(Math.random() * 3)]} ID`;
           
         return [newTicker, ...prev.slice(0, 5)];
       });
@@ -578,7 +579,7 @@ export default function Home() {
             </div>
          </div>
 
-         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-10 max-w-6xl mx-auto">
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-10 max-w-6xl mx-auto">
             {EXCHANGES.map((ex, i) => (
                <motion.div 
                  key={i} 
@@ -586,6 +587,11 @@ export default function Home() {
                  className="group relative flex flex-col items-center text-center p-6 md:p-8 glass rounded-2xl md:rounded-[3rem] transition-all shadow-2xl overflow-hidden"
                >
                   <div className="absolute -top-20 -right-20 w-32 md:w-64 h-32 md:h-64 bg-primary/10 blur-[60px] md:blur-[100px] rounded-full" />
+                  {ex.badge && (
+                    <div className="absolute top-4 right-4 z-10 font-bold bg-linear-to-r from-red-600 to-red-500 text-white px-3 py-1 text-[8px] md:text-[9px] uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(220,38,38,0.5)] border border-red-400/50 animate-pulse">
+                      {ex.badge}
+                    </div>
+                  )}
                   <div className="relative w-16 h-16 md:w-24 md:h-24 mb-4 md:mb-6 rounded-xl border border-white/10 bg-white/5 p-4 md:p-6 flex items-center justify-center transition-all duration-700">
                      <Image src={ex.logo} alt={ex.name} width={48} height={48} className="object-contain opacity-70 group-hover:opacity-100 transition-opacity" />
                   </div>
@@ -824,7 +830,7 @@ export default function Home() {
                </div>
                <div className="space-y-6 text-white/40 leading-relaxed font-poppins text-sm md:text-base">
                   <p>
-                    JSR Sports stands as the definitive authority for online betting IDs, trusted by over 200,000 professional players across India. We provide exclusive white-label access to major exchanges like All Panel, Go Exchange, and Lotus, ensuring that every member experiences the pinnacle of secure gambling.
+                    JSR Sports stands as the definitive authority for online betting IDs, trusted by over 200,000 professional players across India. We provide exclusive white-label access to major exchanges like All Panel, Go Exchange, 11xSports, and Lotus, ensuring that every member experiences the pinnacle of secure gambling.
                   </p>
                   <p>
                     Our infrastructure is purpose-built for the Indian market, featuring 2-minute UPI deposit/withdrawal loops and 24/7 dedicated account managers available via WhatsApp. Whether you are looking for high-limit cricket betting or the thrill of live royal casino games, JSR Sports is your gateway to an elite gaming experience.
@@ -844,7 +850,7 @@ export default function Home() {
                <h3 className="text-xl md:text-2xl font-black text-white italic tracking-tighter uppercase font-cinzel">Operational FAQ</h3>
                <div className="space-y-4">
                   {[
-                    { q: "How quickly can I get an All Panel ID?", a: "Activation is instantaneous. Once you connect with our WhatsApp support, your ID is delivered within 60 seconds." },
+                    { q: "How quickly can I get an All Panel or 11xSports ID?", a: "Activation is instantaneous. Once you connect with our WhatsApp support, your ID is delivered within 60 seconds." },
                     { q: "What is the minimum deposit amount?", a: "To maintain our elite service standards, the minimum deposit is ₹500, enabling full access to all live arenas." },
                     { q: "Is withdrawal really instant?", a: "Yes. Our automated UPI systems process withdrawals in under 2 minutes, 24 hours a day, including weekends." },
                     { q: "Are my winnings safe with JSR Sports?", a: "Absolutely. With 12 years of operational excellence and a zero-default payout record, we are the most secure portal in the industry." }

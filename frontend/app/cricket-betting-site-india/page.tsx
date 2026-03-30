@@ -24,7 +24,7 @@ export default function CricketBettingSite() {
           heading: "Unrivaled IPL and International Markets",
           paragraphs: [
             "The thrill of cricket is deeply embedded in India's culture. To match this enthusiasm, our cricket betting site provides comprehensive access to the biggest premier leagues globally including the IPL, Big Bash, and all major ICC events.",
-            "We supply our users exclusively with official premium exchange IDs such as All Panel, known for featuring the finest live odds liquidity available."
+            "We supply our users exclusively with official premium exchange IDs such as All Panel and 11xSports, known for featuring the finest live odds liquidity available."
           ]
         },
         {
