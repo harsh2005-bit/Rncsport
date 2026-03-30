@@ -82,7 +82,7 @@ export function Navbar() {
       "fixed top-0 left-0 right-0 h-20 flex items-center transition-all duration-500",
       isScrolled ? "bg-black/95 backdrop-blur-md border-b border-white/10 shadow-2xl" : "bg-transparent"
     )} style={{ zIndex: 10000 }}>
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between">
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-8 flex items-center justify-between">
         {/* Logo Section */}
         <div className="flex items-center gap-2 lg:gap-8">
           <Link href="/" className="group flex items-center gap-2 text-2xl font-black tracking-tighter text-white font-cinzel">
@@ -112,7 +112,7 @@ export function Navbar() {
         </div>
 
         {/* Right Section: Actions & Profile */}
-        <div className="flex items-center gap-3 md:gap-4">
+        <div className="flex items-center gap-1.5 sm:gap-3 md:gap-4 shrink-0">
           {/* Search Bar - Hidden on Mobile */}
           <div className="hidden md:flex relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-primary transition-colors" />
@@ -124,23 +124,22 @@ export function Navbar() {
           </div>
 
           {/* Quick Action Buttons (Mobile + Desktop) */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 md:gap-2">
             <Link
               href="/get-id"
-              className="flex items-center gap-1.5 px-3 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl bg-linear-to-r from-primary to-secondary text-black text-[9px] md:text-[10px] font-black uppercase tracking-widest md:tracking-[0.2em] shadow-[0_0_15px_rgba(251,191,36,0.2)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
+              className="flex items-center gap-1.5 px-2.5 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl bg-linear-to-r from-primary to-secondary text-black text-[9px] md:text-[10px] font-black uppercase tracking-wider md:tracking-[0.2em] shadow-[0_0_15px_rgba(251,191,36,0.2)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
             >
-              <Wallet size={12} className="md:hidden" />
+              <Wallet size={12} className="md:hidden shrink-0" />
               <span className="hidden sm:inline">Submit Payment</span>
               <span className="sm:hidden">Deposit</span>
             </Link>
             
             <Link
               href="/withdraw"
-              className="flex items-center gap-1.5 px-3 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl bg-white/5 border border-white/10 text-white text-[9px] md:text-[10px] font-black uppercase tracking-widest md:tracking-[0.2em] hover:bg-white/10 hover:border-primary/40 transition-all whitespace-nowrap"
+              className="hidden sm:flex items-center gap-1.5 px-3 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl bg-white/5 border border-white/10 text-white text-[9px] md:text-[10px] font-black uppercase tracking-widest md:tracking-[0.2em] hover:bg-white/10 hover:border-primary/40 transition-all whitespace-nowrap"
             >
-              <ArrowUpCircle size={12} className="md:hidden" />
-              <span className="hidden sm:inline">Withdraw Funds</span>
-              <span className="sm:hidden">Withdraw</span>
+              <ArrowUpCircle size={14} className="text-white/60" />
+              <span>Withdraw Funds</span>
             </Link>
           </div>
 
@@ -412,6 +411,13 @@ export function Navbar() {
                     className="w-full block px-6 py-4 rounded-2xl bg-linear-to-r from-primary to-secondary text-black text-center text-xs font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all"
                   >
                     Submit Proof
+                  </Link>
+                  <Link
+                    href="/withdraw"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full block px-6 py-4 rounded-2xl bg-white/5 border border-white/10 text-white text-center text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                  >
+                    Withdraw Funds
                   </Link>
                   {user && (
                     <button 
