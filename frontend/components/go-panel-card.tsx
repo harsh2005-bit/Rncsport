@@ -13,7 +13,7 @@ export function GoPanelCard() {
         
         {/* Left Deposit Button */}
         <motion.div 
-          onClick={() => router.push("/payment")}
+          onClick={() => router.push("/get-id")}
           whileHover={{ scale: 1.05 }}
           className="order-1 sm:order-0 group cursor-pointer relative z-10 flex flex-col items-center justify-center w-64 sm:w-auto sm:-mr-4 bg-[#1a1a1a] border border-white/5 rounded-2xl sm:rounded-none sm:rounded-l-3xl py-6 sm:py-8 px-8 sm:pl-8 sm:pr-12 shadow-[0_0_15px_rgba(251,191,36,0)] hover:shadow-[0_0_25px_rgba(251,191,36,0.25)] hover:border-[#fbbf24]/40 hover:z-30 transition-all duration-300 pointer-events-auto"
         >

@@ -448,7 +448,7 @@ export default function Home() {
             {/* HIGH-VISIBILITY MOBILE ACTIONS */}
             <div className="sm:hidden grid grid-cols-2 gap-3 w-full animate-in fade-in slide-in-from-bottom-4 duration-1000">
                <Link 
-                 href="/payment"
+                 href="/get-id"
                  className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-linear-to-br from-primary/20 to-primary/5 border border-primary/30 shadow-[0_0_20px_rgba(251,191,36,0.15)] active:scale-95 transition-all h-24"
                >
                   <Wallet className="w-6 h-6 text-primary" />
