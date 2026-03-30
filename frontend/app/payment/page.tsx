@@ -425,18 +425,19 @@ function PaymentContent() {
                 <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">
                   Select Platform
                 </label>
-                <div className="flex gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                   {[
                     { id: "All Panel Exch", label: "All Panel" },
                     { id: "Go Exch 777", label: "Go Exch 777" },
                     { id: "11xSports", label: "11xSports", badge: "Auto Site" }
-                  ].map((p) => (
+                  ].map((p, idx) => (
                     <button
                       key={p.id}
                       type="button"
                       onClick={() => setPlatform(p.id)}
                       className={cn(
-                        "relative flex-1 py-3 px-4 rounded-xl border text-xs font-black uppercase tracking-wider transition-all",
+                        "relative py-3 px-2 sm:px-4 rounded-xl border text-[10px] sm:text-xs font-black uppercase tracking-wider transition-all",
+                        idx === 2 ? "col-span-2 md:col-span-1" : "",
                         platform === p.id 
                           ? "bg-primary/20 border-primary text-primary" 
                           : "bg-black/40 border-white/10 text-white/40 hover:border-white/20"
