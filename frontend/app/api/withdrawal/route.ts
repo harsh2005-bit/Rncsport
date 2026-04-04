@@ -13,7 +13,6 @@ export async function POST(req: Request) {
     const name = formData.get("name") as string;
     const phoneNumber = formData.get("phoneNumber") as string;
     const amount = Number(formData.get("amount"));
-    const paymentMethod = formData.get("paymentMethod") as string;
     
     // Bank Details
     const accountNumber = formData.get("accountNumber") as string;
@@ -28,12 +27,12 @@ export async function POST(req: Request) {
     const bettingId = formData.get("bettingId") as string;
     const bettingPassword = formData.get("bettingPassword") as string;
 
-    if (!userId || !amount || !paymentMethod) {
+    if (!userId || !amount) {
       return NextResponse.json({ message: "Missing required core fields." }, { status: 400 });
     }
 
     let qrImageUrl = "";
-    if (paymentMethod === "UPI" && file && file.size > 0) {
+    if (file && file.size > 0) {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
       
@@ -59,16 +58,16 @@ export async function POST(req: Request) {
       name: name || "Unknown",
       phoneNumber: phoneNumber || "Unknown",
       amount,
-      paymentMethod,
-      bankDetails: paymentMethod === "BANK_TRANSFER" ? {
-        accountNumber: accountNumber?.trim(),
-        ifsc: ifsc?.trim().toUpperCase(),
-        holderName: holderName?.trim()
-      } : null,
-      upiDetails: paymentMethod === "UPI" ? {
+      paymentMethod: "BOTH",
+      bankDetails: {
+        accountNumber: accountNumber?.trim() || "",
+        ifsc: ifsc?.trim().toUpperCase() || "",
+        holderName: holderName?.trim() || ""
+      },
+      upiDetails: {
         upiId: upiId?.trim() || "",
         qrImageUrl
-      } : null,
+      },
       credentials: {
         id: bettingId?.trim(),
         password: bettingPassword?.trim()

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { MessageCircle, X, Clock, Loader2, ArrowLeft, XCircle, ImageIcon } from "lucide-react";
+import { MessageCircle, X, Clock, Loader2, ArrowLeft, XCircle, ImageIcon, Volume2, VolumeX } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +35,8 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
   const knownIdsRef = useRef<Set<string>>(new Set());
   const initialLoadDone = useRef(false);
 
+  const [soundEnabled, setSoundEnabled] = useState(false);
+
   // Switching to STABLE API FETCHING (Guaranteed to work bypasses client-side rules)
   useEffect(() => {
     const fetchData = async (isInitial = false) => {
@@ -59,9 +61,14 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
             
             if (hasNewPending) {
               try {
-                const audio = new Audio("/mixkit-software-interface-start-2574.wav");
-                audio.volume = 0.5;
-                audio.play().catch(e => console.warn("Admin Auto-play blocked", e));
+                const audioEl = document.getElementById("notification-sound-deposits") as HTMLAudioElement;
+                if (audioEl) {
+                  audioEl.volume = 0.5;
+                  const playPromise = audioEl.play();
+                  if (playPromise !== undefined) {
+                    playPromise.catch(e => console.warn("Admin Auto-play blocked", e));
+                  }
+                }
               } catch (e) {
                 console.error("Audio playback error", e);
               }
@@ -187,12 +194,34 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
         </div>
       </div>
 
-      <div className="mb-2">
-         <h1 className="text-2xl md:text-3xl font-bold tracking-wide text-white uppercase font-cinzel">
-           Verification <span className="text-yellow-400">Center</span>
-         </h1>
-         <p className="text-white/40 text-[9px] font-black tracking-[0.3em] uppercase mt-0.5">Authorized Transaction Stream</p>
+      <div className="mb-2 flex items-center justify-between">
+         <div>
+           <h1 className="text-2xl md:text-3xl font-bold tracking-wide text-white uppercase font-cinzel">
+             Verification <span className="text-yellow-400">Center</span>
+           </h1>
+           <p className="text-white/40 text-[9px] font-black tracking-[0.3em] uppercase mt-0.5">Authorized Transaction Stream</p>
+         </div>
+         <button
+           onClick={() => {
+             const audioEl = document.getElementById("notification-sound-deposits") as HTMLAudioElement;
+             if (audioEl) {
+               audioEl.play().catch(() => {});
+               audioEl.pause();
+               audioEl.currentTime = 0;
+             }
+             setSoundEnabled(!soundEnabled);
+           }}
+           className={cn(
+             "p-3 rounded-xl border transition-all flex items-center justify-center gap-2",
+             soundEnabled ? "bg-primary/20 border-primary/50 text-primary" : "bg-white/5 border-white/10 text-white/40 hover:text-white"
+           )}
+           title="Toggle Notification Sound"
+         >
+           {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+         </button>
       </div>
+
+      <audio id="notification-sound-deposits" src="/mixkit-software-interface-start-2574.wav" preload="auto" />
 
       <div className="bg-black/40 border border-yellow-400/20 rounded-3xl p-6 md:p-8 backdrop-blur-3xl relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 blur-[120px] rounded-full -z-10" />

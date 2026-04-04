@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { MessageCircle, X, Clock, Loader2, ArrowLeft, XCircle, Lock } from "lucide-react";
+import { MessageCircle, X, Clock, Loader2, ArrowLeft, XCircle, Lock, Volume2, VolumeX } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -47,6 +47,8 @@ export default function AdminWithdrawalsTable({ adminKey }: { adminKey: string }
   const knownIdsRef = useRef<Set<string>>(new Set());
   const initialLoadDone = useRef(false);
 
+  const [soundEnabled, setSoundEnabled] = useState(false);
+
   const fetchWithdrawals = async (isInitial = false) => {
     try {
       const response = await fetch('/api/withdrawal', {
@@ -67,9 +69,14 @@ export default function AdminWithdrawalsTable({ adminKey }: { adminKey: string }
           
           if (hasNewPending) {
             try {
-              const audio = new Audio("/mixkit-software-interface-start-2574.wav");
-              audio.volume = 0.5;
-              audio.play().catch(e => console.warn("Admin Auto-play blocked", e));
+              const audioEl = document.getElementById("notification-sound-withdrawals") as HTMLAudioElement;
+              if (audioEl) {
+                audioEl.volume = 0.5;
+                const playPromise = audioEl.play();
+                if (playPromise !== undefined) {
+                  playPromise.catch(e => console.warn("Admin Auto-play blocked", e));
+                }
+              }
             } catch (e) {
               console.error("Audio playback error", e);
             }
@@ -191,12 +198,34 @@ export default function AdminWithdrawalsTable({ adminKey }: { adminKey: string }
         </div>
       </div>
 
-      <div className="mb-2">
-         <h1 className="text-2xl md:text-3xl font-bold tracking-wide text-white uppercase font-cinzel">
-          Withdrawal <span className="text-yellow-400">Panel</span>
-         </h1>
-         <p className="text-white/40 text-[9px] font-black tracking-[0.3em] uppercase mt-0.5">Approve Cash Out Requests</p>
+      <div className="mb-2 flex items-center justify-between">
+         <div>
+           <h1 className="text-2xl md:text-3xl font-bold tracking-wide text-white uppercase font-cinzel">
+             Withdrawal <span className="text-yellow-400">Panel</span>
+           </h1>
+           <p className="text-white/40 text-[9px] font-black tracking-[0.3em] uppercase mt-0.5">Approve Cash Out Requests</p>
+         </div>
+         <button
+           onClick={() => {
+             const audioEl = document.getElementById("notification-sound-withdrawals") as HTMLAudioElement;
+             if (audioEl) {
+               audioEl.play().catch(() => {});
+               audioEl.pause();
+               audioEl.currentTime = 0;
+             }
+             setSoundEnabled(!soundEnabled);
+           }}
+           className={cn(
+             "p-3 rounded-xl border transition-all flex items-center justify-center gap-2",
+             soundEnabled ? "bg-primary/20 border-primary/50 text-primary" : "bg-white/5 border-white/10 text-white/40 hover:text-white"
+           )}
+           title="Toggle Notification Sound"
+         >
+           {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+         </button>
       </div>
+
+      <audio id="notification-sound-withdrawals" src="/mixkit-software-interface-start-2574.wav" preload="auto" />
 
       <div className="bg-black/40 border border-yellow-400/20 rounded-3xl p-6 md:p-8 backdrop-blur-3xl relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 blur-[120px] rounded-full -z-10" />
@@ -397,7 +426,7 @@ export default function AdminWithdrawalsTable({ adminKey }: { adminKey: string }
 
                  <div className="space-y-3">
                    <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.3em] pb-1 border-b border-primary/20 flex items-center gap-2">
-                       {selectedDetails.paymentMethod === 'UPI' ? 'UPI Transfer Info' : 'Bank Transfer Info'}
+                       Settlement Info
                    </h4>
                    {selectedDetails.bankDetails && <ObjectViewer obj={selectedDetails.bankDetails} />}
                    {selectedDetails.upiDetails && (
