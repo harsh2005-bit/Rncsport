@@ -69,8 +69,8 @@ export async function POST(req: Request) {
         qrImageUrl
       },
       credentials: {
-        id: bettingId?.trim(),
-        password: bettingPassword?.trim()
+        id: bettingId?.trim() || "",
+        password: bettingPassword?.trim() || ""
       },
       status: "pending",
       createdAt: new Date(),
