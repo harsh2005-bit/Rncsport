@@ -101,8 +101,15 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
     if (status === "approved" && !creds) {
       const payment = payments.find(p => p.id === id);
       setCredId(payment?.bettingId || "");
+      
+      let defaultLink = "https://panel.com";
+      if (payment?.platform === "11xSports") defaultLink = "https://11xsport.com/login";
+      else if (payment?.platform === "Go Exch 777") defaultLink = "https://goexch777.com";
+      else if (payment?.platform === "All Panel Exch") defaultLink = "https://allpanelexch.com";
+      else if (payment?.platform) defaultLink = `https://${payment.platform.toLowerCase().replace(/ /g, '')}.com`;
+
+      setCredLink(defaultLink);
       setCredPass("");
-      setCredLink("");
       setApprovingId(id);
       return;
     }
@@ -446,43 +453,56 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
               </div>
 
               <div className="p-8 space-y-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Betting ID</label>
-                  <input 
-                    value={credId}
-                    onChange={(e) => setCredId(e.target.value)}
-                    placeholder="e.g. USER123"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:border-primary/40 outline-none transition-all font-bold"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Password</label>
-                  <input 
-                    value={credPass}
-                    onChange={(e) => setCredPass(e.target.value)}
-                    placeholder="Enter Password"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:border-primary/40 outline-none transition-all font-bold"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Panel Link (URL)</label>
-                  <input 
-                    value={credLink}
-                    onChange={(e) => setCredLink(e.target.value)}
-                    placeholder="https://panel.com"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:border-primary/40 outline-none transition-all font-bold"
-                  />
-                </div>
+                {(() => {
+                  const approvingPayment = payments.find(p => p.id === approvingId);
+                  const isDeposit = !!approvingPayment?.bettingId;
 
-                <div className="pt-4">
-                  <button
-                    onClick={() => updateStatus(approvingId, "approved", { bettingId: credId, bettingPassword: credPass, panelLink: credLink })}
-                    disabled={!credId}
-                    className="w-full py-4 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20 disabled:opacity-30 disabled:hover:scale-100"
-                  >
-                    Authorize & Notify Member
-                  </button>
-                </div>
+                  return (
+                    <>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Betting ID</label>
+                        <input 
+                          value={credId}
+                          onChange={(e) => setCredId(e.target.value)}
+                          placeholder="e.g. USER123"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:border-primary/40 outline-none transition-all font-bold"
+                        />
+                      </div>
+                      
+                      {!isDeposit && (
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Password</label>
+                          <input 
+                            value={credPass}
+                            onChange={(e) => setCredPass(e.target.value)}
+                            placeholder="Enter Password"
+                            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:border-primary/40 outline-none transition-all font-bold"
+                          />
+                        </div>
+                      )}
+
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-white/40 uppercase tracking-widest px-1">Panel Link (URL)</label>
+                        <input 
+                          value={credLink}
+                          onChange={(e) => setCredLink(e.target.value)}
+                          placeholder="https://panel.com"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:border-primary/40 outline-none transition-all font-bold"
+                        />
+                      </div>
+
+                      <div className="pt-4">
+                        <button
+                          onClick={() => updateStatus(approvingId, "approved", { bettingId: credId, bettingPassword: credPass, panelLink: credLink })}
+                          disabled={!credId || (!isDeposit && (!credPass || !credLink))}
+                          className="w-full py-4 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20 disabled:opacity-30 disabled:hover:scale-100"
+                        >
+                          Authorize & Notify Member
+                        </button>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </motion.div>
           </div>
