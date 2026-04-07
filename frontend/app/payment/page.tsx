@@ -53,7 +53,8 @@ function PaymentContent() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [authId, setAuthId] = useState<string>("GUEST");
-  const { user, openAuthModal, loading } = useAuth();
+  const [bettingId, setBettingId] = useState<string>("");
+  const { user, openAuthModal, loading, notifications } = useAuth();
   
   const searchParams = useSearchParams();
   const isUploadOnly = searchParams.get("mode") === "upload";
@@ -76,7 +77,18 @@ function PaymentContent() {
     };
   }, [previewUrl]);
 
-
+  // Auto-fill Betting ID from latest approved notification
+  useEffect(() => {
+    if (notifications && notifications.length > 0) {
+      const approvedNotif = notifications.find(n => 
+        (n.title.toLowerCase().includes("approved") || n.status === "approved") && 
+        n.credentials?.id
+      );
+      if (approvedNotif && approvedNotif.credentials) {
+        if (!bettingId) setBettingId(approvedNotif.credentials.id);
+      }
+    }
+  }, [notifications, bettingId]);
 
   if (loading) {
     return (
@@ -179,6 +191,7 @@ function PaymentContent() {
       formData.append("paymentMethod", paymentMethod);
       formData.append("platform", platform);
       formData.append("transactionId", "SYSTEM_" + Date.now());
+      formData.append("bettingId", bettingId.trim());
 
       // 2. Fetch Firebase ID Token for secure backend verification
       const token = await user.getIdToken();
@@ -391,6 +404,25 @@ function PaymentContent() {
                     placeholder="70000 00000"
                   />
                 </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em]">
+                Authorized Betting ID
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  readOnly={!!bettingId && !isUploadOnly} // Let user type if no ID found, but if auto-filled, lock it if not in upload mode? Or maybe let them type if they want another ID?
+                  value={bettingId}
+                  onChange={(e) => setBettingId(e.target.value)}
+                  className={cn(
+                    "w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-sm text-white outline-none focus:border-primary/40 transition-all font-bold",
+                    bettingId && "bg-black/60 text-white/50"
+                  )}
+                  placeholder={bettingId ? "Loading mapping..." : "Leave empty to create new ID or enter existing ID"}
+                />
               </div>
             </div>
 

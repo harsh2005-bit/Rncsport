@@ -15,6 +15,7 @@ interface PaymentRequest {
   transactionId?: string;
   screenshotUrl: string;
   status: string;
+  bettingId?: string;
   createdAt: Date | string | number | null;
 }
 
@@ -98,6 +99,10 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
 
   const updateStatus = async (id: string, status: string, creds?: Record<string, string | number | boolean>) => {
     if (status === "approved" && !creds) {
+      const payment = payments.find(p => p.id === id);
+      setCredId(payment?.bettingId || "");
+      setCredPass("");
+      setCredLink("");
       setApprovingId(id);
       return;
     }
@@ -254,7 +259,12 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
                     className="bg-white/3 hover:bg-white/5 border border-white/5 transition-all group"
                   >
                     <td className="px-4 py-4 rounded-l-2xl">
-                      <span className="font-bold text-white uppercase tracking-tighter text-sm italic group-hover:text-primary transition-colors">{item.name}</span>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-white uppercase tracking-tighter text-sm italic group-hover:text-primary transition-colors">{item.name}</span>
+                        {item.bettingId && (
+                          <span className="text-[10px] text-primary/80 font-mono mt-0.5">ID: {item.bettingId}</span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-4 font-mono text-white/50 text-[11px] tracking-wider">
                       {item.phoneNumber}
@@ -467,7 +477,7 @@ export default function AdminTable({ adminKey }: { adminKey: string }) {
                 <div className="pt-4">
                   <button
                     onClick={() => updateStatus(approvingId, "approved", { bettingId: credId, bettingPassword: credPass, panelLink: credLink })}
-                    disabled={!credId || !credPass || !credLink}
+                    disabled={!credId}
                     className="w-full py-4 bg-primary text-black text-[10px] font-black uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20 disabled:opacity-30 disabled:hover:scale-100"
                   >
                     Authorize & Notify Member

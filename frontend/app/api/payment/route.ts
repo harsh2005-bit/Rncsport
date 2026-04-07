@@ -28,6 +28,7 @@ export async function POST(req: Request) {
     const paymentMethod = formData.get("paymentMethod") as string;
     const platform = formData.get("platform") as string;
     const transactionId = formData.get("transactionId") as string;
+    const bettingId = formData.get("bettingId") as string;
     const file = formData.get("file") as File;
 
     if (!file) {
@@ -70,6 +71,7 @@ export async function POST(req: Request) {
       paymentMethod: paymentMethod || "UPI",
       platform: platform || "All Panel Exch",
       transactionId: transactionId || null,
+      bettingId: bettingId || null,
       screenshotUrl,
       status: "pending",
       createdAt: new Date(),
@@ -136,8 +138,8 @@ export async function PATCH(req: Request) {
 
     // Validation for approval
     if (status === "approved") {
-      if (!bettingId || !bettingPassword || !panelLink) {
-        return NextResponse.json({ message: "Betting ID, Password, and Panel Link are required for approval" }, { status: 400 });
+      if (!bettingId) {
+        return NextResponse.json({ message: "Betting ID is required for approval" }, { status: 400 });
       }
     }
 
@@ -160,7 +162,7 @@ export async function PATCH(req: Request) {
       
       if (userId) {
         // Create Notification with credentials if approved
-        const notificationData: Record<string, any> = {
+        const notificationData: Record<string, unknown> = {
           userId,
           type: "payment",
           title: status === "approved" ? "Payment Approved ✅" : "Payment Rejected ❌",

@@ -33,6 +33,11 @@ export function Navbar() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const { user, logout, openAuthModal, notifications, markNotificationAsRead } = useAuth();
   
+  const hasActiveId = user && notifications.some(n => 
+    (n.title.toLowerCase().includes('approved') || n.status === 'approved') && n.credentials?.id
+  );
+  const depositLink = hasActiveId ? "/payment?mode=upload" : "/get-id";
+  
   // Debug NAVBAR STATE
   useEffect(() => {
     console.log("NAVBAR NOTIFICATIONS STATE:", notifications);
@@ -126,7 +131,7 @@ export function Navbar() {
           {/* Quick Action Buttons (Mobile + Desktop) */}
           <div className="flex items-center gap-1.5 md:gap-2">
             <Link
-              href="/get-id"
+              href={depositLink}
               className="flex items-center gap-1.5 px-2.5 md:px-6 py-2 md:py-2.5 rounded-lg md:rounded-xl bg-linear-to-r from-primary to-secondary text-black text-[9px] md:text-[10px] font-black uppercase tracking-wider md:tracking-[0.2em] shadow-[0_0_15px_rgba(251,191,36,0.2)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
             >
               <Wallet size={12} className="md:hidden shrink-0" />
@@ -406,7 +411,7 @@ export function Navbar() {
 
               <div className="p-8 bg-black/40 border-t border-white/5 space-y-4">
                   <Link
-                    href="/get-id"
+                    href={depositLink}
                     onClick={() => setIsOpen(false)}
                     className="w-full block px-6 py-4 rounded-2xl bg-linear-to-r from-primary to-secondary text-black text-center text-xs font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all"
                   >
