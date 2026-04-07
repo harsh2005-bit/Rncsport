@@ -10,8 +10,9 @@ import {
   ArrowLeft,
   Zap
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/auth-context";
+import { useRouter } from "next/navigation";
 import { Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -26,7 +27,19 @@ const BANK_DETAILS = {
 
 export default function GetIdPage() {
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const { user, openAuthModal, loading } = useAuth();
+  const router = useRouter();
+  const { user, openAuthModal, loading, notifications } = useAuth();
+
+  useEffect(() => {
+    if (user && notifications && notifications.length > 0) {
+      const hasActiveId = notifications.some(n => 
+        (n.title.toLowerCase().includes('approved') || n.status === 'approved') && n.credentials?.id
+      );
+      if (hasActiveId) {
+        router.replace("/payment?mode=upload");
+      }
+    }
+  }, [user, notifications, router]);
 
   if (loading) {
     return (
