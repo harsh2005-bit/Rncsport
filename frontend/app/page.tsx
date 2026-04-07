@@ -81,7 +81,7 @@ const TRUST_BADGES = [
 
 const BONUS_OFFERS = [
   { title: "Welcome Bonus", val: "10%", desc: "On your first ID activation" },
-  { title: "Every Deposit", val: "5%", desc: "Unlimited reload bonuses" },
+  { title: "Every Deposit", val: "2%", desc: "Unlimited reload bonuses" },
   { title: "Payout Speed", val: "2 MIN", desc: "Deposits & Withdrawals" },
 ];
 

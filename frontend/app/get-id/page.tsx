@@ -17,9 +17,9 @@ import { Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
-const UPI_ID = "harshjhabksc@oksbi";
+const UPI_ID = "6203742157@okbizaxis";
 const BANK_DETAILS = {
-  name: "JSR SPORTS PVT LTD",
+  name: "Shivani Enterprises",
   account: "987654321012",
   ifsc: "HDFC0001234",
   bank: "HDFC BANK"
