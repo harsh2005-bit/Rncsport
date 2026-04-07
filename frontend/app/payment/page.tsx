@@ -267,7 +267,7 @@ function PaymentContent() {
               <div className="flex-1 flex flex-col items-center justify-center p-6 bg-white/5 rounded-3xl border border-white/5 gap-6">
                 <div className="w-56 h-56 md:w-48 md:h-48 bg-white rounded-2xl flex items-center justify-center relative overflow-hidden group/qr shadow-2xl">
                   <Image
-                    src="/upi_qr.jpg"
+                    src="/upi_qr.jpeg"
                     alt="UPI QR Code"
                     width={200}
                     height={200}
